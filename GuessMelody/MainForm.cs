@@ -7,7 +7,7 @@ namespace GuessMelody
 {
     public partial class MainForm : Form
     {
-        static readonly List<(string FileName, bool isUsed)> _songsCollection = new List<(string, bool)>();
+        static readonly Dictionary<string, bool> _songsCollection = new Dictionary<string, bool>();
 
         readonly OptionsForm frm = new OptionsForm(_songsCollection);
 

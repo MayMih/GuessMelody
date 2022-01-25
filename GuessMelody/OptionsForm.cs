@@ -16,16 +16,18 @@ namespace GuessMelody
 
         private readonly CommonOpenFileDialog musicFolderBrowseDialog = new CommonOpenFileDialog(DEFAULT_MUSIC_SELECT_DIALOG_TITLE);
         //private readonly BindingSource songseCollectionBindSourse = new BindingSource();
+        private readonly Dictionary<string, bool> _songsCollection;
 
-        
-        public OptionsForm(List<(string FileName, bool isUsed)> songsCollection)
+
+        public OptionsForm(Dictionary<string, bool> songsCollection)
         {
             InitializeComponent();
             musicFolderBrowseDialog.IsFolderPicker = true;
             musicFolderBrowseDialog.Multiselect = true;
             musicFolderBrowseDialog.NavigateToShortcut = true;
             //songseCollectionBindSourse.DataMember = "FileName";
-            //songseCollectionBindSourse.DataSource = songsCollection;            
+            //songseCollectionBindSourse.DataSource = songsCollection;
+            _songsCollection = songsCollection;            
         }
 
         private OptionsForm() { }
@@ -35,18 +37,17 @@ namespace GuessMelody
 
 
         /// <summary>
-        /// При первоначальной загрузке формы отмечаем все песни как используемые
+        /// При каждой загрузке формы отмечаем все песни как используемые
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void OptionsForm_Load(object sender, System.EventArgs e)
         {
-            clbSongs.SuspendLayout();
-            for (int i = 0; i < clbSongs.Items.Count; i++)
-            {
-                clbSongs.SetItemChecked(i, true);
-            }
-            clbSongs.ResumeLayout();
+            cbSubfolderSearch.Checked = IsSubfolderSearch;
+            lvSongs.Items.Clear();
+            lvSongs.Items.AddRange(_songsCollection.Select(x => new ListViewItem(x.Key) { 
+                Checked = x.Value }).ToArray());
+            lvSongs.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);            
         }
 
 
@@ -57,7 +58,11 @@ namespace GuessMelody
             {
                 if (this.DialogResult == DialogResult.OK)
                 {
-                    // TODO: сохраняем настройки
+                    _songsCollection.Clear();
+                    foreach (ListViewItem itm in lvSongs.Items)
+                    {
+                        _songsCollection.Add(itm.Text, itm.Checked);
+                    }
                 }
                 e.Cancel = true;
                 this.Hide();
@@ -70,7 +75,7 @@ namespace GuessMelody
             if (MessageBox.Show("Вы уверены, что хотите удалить из списка ВСЕ песни?", "Подтверждение",
                 MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
             {
-                clbSongs.Items.Clear();
+                lvSongs.Items.Clear();
             }
         }
 
@@ -89,7 +94,7 @@ namespace GuessMelody
             }
             try
             {
-                clbSongs.SuspendLayout();
+                lvSongs.SuspendLayout();
                 this.Cursor = Cursors.WaitCursor;
                 this.Update();
                 foreach (var folder in musicFolderBrowseDialog.FileNames)
@@ -99,9 +104,20 @@ namespace GuessMelody
                         Union(Directory.EnumerateFiles(folder, "*.aac", so)).Union(Directory.EnumerateFiles(folder, "*.m4a", so)).
                         Union(Directory.EnumerateFiles(folder, "*.ogg", so)).Union(Directory.EnumerateFiles(folder, "*.wav", so)).
                         Union(Directory.EnumerateFiles(folder, "*.flac", so));
+                    // добавляем только песни с уникальными именами (даже если они находятся в разных каталогах)
+                    // N.B.: Минус такого подхода в том, что одноимённые песни разных испольнителей тоже НЕ будут добавлены!
+                    // TODO: тут нужно по идее или сравнивать теги Исполнителя, или в качестве ключа использовать полный путь
+                    // к файлу, но тогда этот файл будет добавлен несколько раз, если он находится в разных каталогах (
+                    //     например песня из обычного альбома и из сборника)
                     foreach (var songFile in fileCollection)
                     {
-                        clbSongs.SetSelected(clbSongs.Items.Add(songFile, true), true);
+                        var songName = Path.GetFileName(songFile);
+                        if (!lvSongs.Items.ContainsKey(songName))
+                        {
+                            var newItem = lvSongs.Items.Add(songFile);
+                            newItem.Name = songName;
+                            newItem.Checked = newItem.Selected = true;
+                        }
                     }
                 }
             }
@@ -111,8 +127,9 @@ namespace GuessMelody
             }
             finally
             {
+                lvSongs.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
                 this.Cursor = Cursors.Default;
-                clbSongs.ResumeLayout();
+                lvSongs.ResumeLayout();
             }
         }
 
@@ -125,7 +142,18 @@ namespace GuessMelody
 
         private void btDeleteSelected_Click(object sender, EventArgs e)
         {
-            Application.Exit();
+            lvSongs.SuspendLayout();
+            foreach (ListViewItem itm in lvSongs.SelectedItems)
+            {
+                lvSongs.Items.Remove(itm);
+            }
+            lvSongs.ResumeLayout();
+        }
+
+
+        private void cbSubfolderSearch_CheckedChanged(object sender, EventArgs e)
+        {
+            IsSubfolderSearch = cbSubfolderSearch.Checked;
         }
     }
 }
