@@ -31,18 +31,19 @@ namespace GuessMelody
         {
             this.btAddMusic = new System.Windows.Forms.Button();
             this.btClear = new System.Windows.Forms.Button();
-            this.cbSubfolderSearch = new System.Windows.Forms.CheckBox();
+            this.cbSubfolderScan = new System.Windows.Forms.CheckBox();
             this.btDeleteSelected = new System.Windows.Forms.Button();
             this.btOK = new System.Windows.Forms.Button();
             this.btCancel = new System.Windows.Forms.Button();
             this.lvSongs = new System.Windows.Forms.ListView();
             this.colFileName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.cbDeleteUnexisting = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // btAddMusic
             // 
             this.btAddMusic.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btAddMusic.Location = new System.Drawing.Point(12, 404);
+            this.btAddMusic.Location = new System.Drawing.Point(12, 446);
             this.btAddMusic.Name = "btAddMusic";
             this.btAddMusic.Size = new System.Drawing.Size(173, 23);
             this.btAddMusic.TabIndex = 1;
@@ -53,7 +54,7 @@ namespace GuessMelody
             // btClear
             // 
             this.btClear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btClear.Location = new System.Drawing.Point(403, 404);
+            this.btClear.Location = new System.Drawing.Point(403, 446);
             this.btClear.Name = "btClear";
             this.btClear.Size = new System.Drawing.Size(115, 23);
             this.btClear.TabIndex = 2;
@@ -61,22 +62,23 @@ namespace GuessMelody
             this.btClear.UseVisualStyleBackColor = true;
             this.btClear.Click += new System.EventHandler(this.btClear_Click);
             // 
-            // cbSubfolderSearch
+            // cbSubfolderScan
             // 
-            this.cbSubfolderSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.cbSubfolderSearch.AutoSize = true;
-            this.cbSubfolderSearch.Location = new System.Drawing.Point(18, 444);
-            this.cbSubfolderSearch.Name = "cbSubfolderSearch";
-            this.cbSubfolderSearch.Size = new System.Drawing.Size(167, 17);
-            this.cbSubfolderSearch.TabIndex = 3;
-            this.cbSubfolderSearch.Text = "Обрабатывать подкаталоги";
-            this.cbSubfolderSearch.UseVisualStyleBackColor = true;
-            this.cbSubfolderSearch.CheckedChanged += new System.EventHandler(this.cbSubfolderSearch_CheckedChanged);
+            this.cbSubfolderScan.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.cbSubfolderScan.AutoSize = true;
+            this.cbSubfolderScan.Location = new System.Drawing.Point(18, 478);
+            this.cbSubfolderScan.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
+            this.cbSubfolderScan.Name = "cbSubfolderScan";
+            this.cbSubfolderScan.Size = new System.Drawing.Size(167, 17);
+            this.cbSubfolderScan.TabIndex = 3;
+            this.cbSubfolderScan.Text = "Обрабатывать подкаталоги";
+            this.cbSubfolderScan.UseVisualStyleBackColor = true;
+            this.cbSubfolderScan.CheckedChanged += new System.EventHandler(this.cbSubfolderSearch_CheckedChanged);
             // 
             // btDeleteSelected
             // 
             this.btDeleteSelected.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btDeleteSelected.Location = new System.Drawing.Point(205, 404);
+            this.btDeleteSelected.Location = new System.Drawing.Point(205, 446);
             this.btDeleteSelected.Name = "btDeleteSelected";
             this.btDeleteSelected.Size = new System.Drawing.Size(173, 23);
             this.btDeleteSelected.TabIndex = 4;
@@ -86,8 +88,9 @@ namespace GuessMelody
             // 
             // btOK
             // 
+            this.btOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btOK.Location = new System.Drawing.Point(303, 440);
+            this.btOK.Location = new System.Drawing.Point(12, 509);
             this.btOK.Name = "btOK";
             this.btOK.Size = new System.Drawing.Size(75, 23);
             this.btOK.TabIndex = 5;
@@ -96,8 +99,9 @@ namespace GuessMelody
             // 
             // btCancel
             // 
+            this.btCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btCancel.Location = new System.Drawing.Point(443, 440);
+            this.btCancel.Location = new System.Drawing.Point(110, 509);
             this.btCancel.Name = "btCancel";
             this.btCancel.Size = new System.Drawing.Size(75, 23);
             this.btCancel.TabIndex = 6;
@@ -119,7 +123,7 @@ namespace GuessMelody
             this.lvSongs.HideSelection = false;
             this.lvSongs.Location = new System.Drawing.Point(12, 12);
             this.lvSongs.Name = "lvSongs";
-            this.lvSongs.Size = new System.Drawing.Size(506, 386);
+            this.lvSongs.Size = new System.Drawing.Size(506, 423);
             this.lvSongs.TabIndex = 7;
             this.lvSongs.UseCompatibleStateImageBehavior = false;
             this.lvSongs.View = System.Windows.Forms.View.Details;
@@ -128,16 +132,29 @@ namespace GuessMelody
             // 
             this.colFileName.Width = 0;
             // 
+            // cbDeleteUnexisting
+            // 
+            this.cbDeleteUnexisting.AutoSize = true;
+            this.cbDeleteUnexisting.Location = new System.Drawing.Point(205, 478);
+            this.cbDeleteUnexisting.Margin = new System.Windows.Forms.Padding(3, 6, 3, 6);
+            this.cbDeleteUnexisting.Name = "cbDeleteUnexisting";
+            this.cbDeleteUnexisting.Size = new System.Drawing.Size(313, 17);
+            this.cbDeleteUnexisting.TabIndex = 8;
+            this.cbDeleteUnexisting.Text = "Удалять из списка несуществующие песни при запуске";
+            this.cbDeleteUnexisting.UseVisualStyleBackColor = true;
+            this.cbDeleteUnexisting.CheckedChanged += new System.EventHandler(this.cbDeleteUnexisting_CheckedChanged);
+            // 
             // OptionsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(530, 475);
+            this.ClientSize = new System.Drawing.Size(530, 544);
+            this.Controls.Add(this.cbDeleteUnexisting);
             this.Controls.Add(this.lvSongs);
             this.Controls.Add(this.btCancel);
             this.Controls.Add(this.btOK);
             this.Controls.Add(this.btDeleteSelected);
-            this.Controls.Add(this.cbSubfolderSearch);
+            this.Controls.Add(this.cbSubfolderScan);
             this.Controls.Add(this.btClear);
             this.Controls.Add(this.btAddMusic);
             this.DoubleBuffered = true;
@@ -159,11 +176,12 @@ namespace GuessMelody
         #endregion
         private System.Windows.Forms.Button btAddMusic;
         private System.Windows.Forms.Button btClear;
-        private System.Windows.Forms.CheckBox cbSubfolderSearch;
+        private System.Windows.Forms.CheckBox cbSubfolderScan;
         private System.Windows.Forms.Button btDeleteSelected;
         private System.Windows.Forms.Button btOK;
         private System.Windows.Forms.Button btCancel;
         private System.Windows.Forms.ListView lvSongs;
         private System.Windows.Forms.ColumnHeader colFileName;
+        private System.Windows.Forms.CheckBox cbDeleteUnexisting;
     }
 }

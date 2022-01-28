@@ -1,30 +1,66 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 
 
 namespace GuessMelody
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public partial class MainForm : Form
     {
-        private static readonly Dictionary<string, bool> _songsCollection = new Dictionary<string, bool>();
 
-        private readonly OptionsForm frmOpts = new OptionsForm(_songsCollection);
-        private readonly GameForm frmGame = new GameForm(_songsCollection);
+        #region 'Поля и константы'
+
+        private readonly OptionsForm frmOpts = new OptionsForm(ProgOptions.Instance);
+        private readonly GameForm frmGame = new GameForm(ProgOptions.Instance);
+
+        #endregion 'Поля и константы'
 
 
+
+        /// <summary>
+        /// Конструктор по умолчанию
+        /// </summary>
         public MainForm()
         {
             InitializeComponent();            
             this.MaximumSize = this.BackgroundImage.Size;
-            //var gUnit = System.Drawing.GraphicsUnit.Pixel;
-            //this.MaximizedBounds = System.Drawing.Rectangle.Ceiling(this.BackgroundImage.GetBounds(ref gUnit)) ;
         }
 
-        private void MainForm_Load(object sender, EventArgs e)
+        /// <summary>
+        /// Обработчик загрузки настроек программы
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void MainForm_Load(object sender, EventArgs e)
         {
-            // TODO: здесь считывание из настроек
-            frmOpts.IsSubfolderSearch = true;
+            this.UseWaitCursor = true;            
+            Dictionary <string, bool> ctrState = new Dictionary<string, bool>(this.Controls.Count);
+            this.Controls.OfType<Control>().ToList().ForEach(ctr => {
+                ctrState.Add(ctr.Name, ctr.Enabled);
+                ctr.Enabled = false;
+                });
+            this.Update();
+            try
+            {
+                await ProgOptions.Instance.LoadAsync();
+            }
+            catch (Exception ex)
+            {
+                this.UseWaitCursor = false;
+                MessageBox.Show("Непредвиденная ошибка загрузки настроек приложения:" + Environment.NewLine +
+                    Environment.NewLine + ex.Message + Environment.NewLine + 
+                    "будут использованы стандартные настройки", "Ошибка", 
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                this.UseWaitCursor = false;
+                this.Controls.OfType<Control>().ToList().ForEach(ctr => ctr.Enabled = ctrState[ctr.Name]);
+            }
         }
 
         private void btClose_Click(object sender, EventArgs e)
@@ -48,9 +84,10 @@ namespace GuessMelody
         /// <param name="e"></param>
         private void btStart_Click(object sender, EventArgs e)
         {
-            if (_songsCollection.Count == 0)
+            if (ProgOptions.Instance.SongsCollection.Count == 0)
             {
-                MessageBox.Show("Не задан список песен!", "Запуск игры невозможен", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Не задан список песен!", "Запуск игры невозможен", MessageBoxButtons.OK, 
+                    MessageBoxIcon.Warning);
             }
             else
             {
@@ -62,6 +99,32 @@ namespace GuessMelody
         {
             frmOpts?.Dispose();
             frmGame?.Dispose();
+        }
+
+        /// <summary>
+        /// Перед закрытием формы сохраняем настройки
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private async void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            this.UseWaitCursor = true;
+            this.Controls.OfType<Control>().ToList().ForEach(ctr => ctr.Enabled = false);
+            this.Update();
+            try
+            {
+                await ProgOptions.Instance.SaveAsync();
+            }
+            catch (Exception ex)
+            {
+                this.UseWaitCursor = false;
+                MessageBox.Show(String.Format("Непредвиденная ошибка при сохранении настроек программы:{0}{0}{1}",
+                    Environment.NewLine, ex.ToString()), "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                this.UseWaitCursor = false;
+            }
         }
     }
 }

@@ -29,9 +29,11 @@ namespace GuessMelody
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GameForm));
             this.wmpHiddenPlayer = new AxWMPLib.AxWindowsMediaPlayer();
             this.btPlayNext = new System.Windows.Forms.Button();
+            this.ttHint = new System.Windows.Forms.ToolTip(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.wmpHiddenPlayer)).BeginInit();
             this.SuspendLayout();
             // 
@@ -83,5 +85,6 @@ namespace GuessMelody
 
         private AxWMPLib.AxWindowsMediaPlayer wmpHiddenPlayer;
         private System.Windows.Forms.Button btPlayNext;
+        private System.Windows.Forms.ToolTip ttHint;
     }
 }

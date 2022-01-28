@@ -16,10 +16,10 @@ namespace GuessMelody
 
         private readonly CommonOpenFileDialog musicFolderBrowseDialog = new CommonOpenFileDialog(DEFAULT_MUSIC_SELECT_DIALOG_TITLE);
         //private readonly BindingSource songseCollectionBindSourse = new BindingSource();
-        private readonly Dictionary<string, bool> _songsCollection;      
+        private readonly ProgOptions _progOpts;      
         
 
-        public OptionsForm(Dictionary<string, bool> songsCollection)
+        public OptionsForm(ProgOptions progOpts)
         {
             InitializeComponent();
             musicFolderBrowseDialog.IsFolderPicker = true;
@@ -27,13 +27,10 @@ namespace GuessMelody
             musicFolderBrowseDialog.NavigateToShortcut = true;
             //songseCollectionBindSourse.DataMember = "FileName";
             //songseCollectionBindSourse.DataSource = songsCollection;
-            _songsCollection = songsCollection;            
+            _progOpts = progOpts;    
         }
 
         private OptionsForm() { }
-
-
-        public bool IsSubfolderSearch { get; set; }
 
 
         /// <summary>
@@ -43,10 +40,10 @@ namespace GuessMelody
         /// <param name="e"></param>
         private void OptionsForm_Load(object sender, System.EventArgs e)
         {
-            cbSubfolderSearch.Checked = IsSubfolderSearch;
+            cbSubfolderScan.Checked = _progOpts.IsSubfolderScan;
             lvSongs.Items.Clear();
-            lvSongs.Items.AddRange(_songsCollection.Select(x => new ListViewItem(x.Key) { 
-                Checked = x.Value }).ToArray());
+            lvSongs.Items.AddRange(_progOpts.SongsCollection.Select(x => new ListViewItem(x.FileName) { 
+                Checked = x.IsChecked }).ToArray());
             lvSongs.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);            
         }
 
@@ -62,10 +59,10 @@ namespace GuessMelody
             {
                 if (this.DialogResult == DialogResult.OK)
                 {
-                    _songsCollection.Clear();
+                    _progOpts.SongsCollection.Clear();
                     foreach (ListViewItem itm in lvSongs.Items)
                     {
-                        _songsCollection.Add(itm.Text, itm.Checked);
+                        _progOpts.SongsCollection.Add((itm.Text, itm.Checked));
                     }
                 }
                 e.Cancel = true;
@@ -90,7 +87,7 @@ namespace GuessMelody
         /// <param name="e"></param>
         private void btAddMusic_Click(object sender, System.EventArgs e)
         {
-            musicFolderBrowseDialog.Title = cbSubfolderSearch.Checked ? (DEFAULT_MUSIC_SELECT_DIALOG_TITLE +
+            musicFolderBrowseDialog.Title = cbSubfolderScan.Checked ? (DEFAULT_MUSIC_SELECT_DIALOG_TITLE +
                 " (подкаталоги учитываются)") : DEFAULT_MUSIC_SELECT_DIALOG_TITLE;
             if (musicFolderBrowseDialog.ShowDialog() == CommonFileDialogResult.Cancel)
             {
@@ -103,7 +100,7 @@ namespace GuessMelody
                 this.Update();
                 foreach (var folder in musicFolderBrowseDialog.FileNames)
                 {
-                    var so = this.IsSubfolderSearch ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
+                    var so = _progOpts.IsSubfolderScan ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
                     var fileCollection = Directory.EnumerateFiles(folder, "*.mp3", so).
                         Union(Directory.EnumerateFiles(folder, "*.aac", so)).Union(Directory.EnumerateFiles(folder, "*.m4a", so)).
                         Union(Directory.EnumerateFiles(folder, "*.ogg", so)).Union(Directory.EnumerateFiles(folder, "*.wav", so)).
@@ -157,7 +154,12 @@ namespace GuessMelody
 
         private void cbSubfolderSearch_CheckedChanged(object sender, EventArgs e)
         {
-            IsSubfolderSearch = cbSubfolderSearch.Checked;
+            _progOpts.IsSubfolderScan = cbSubfolderScan.Checked;
+        }
+
+        private void cbDeleteUnexisting_CheckedChanged(object sender, EventArgs e)
+        {
+            _progOpts.IsDeleteUnexisting = cbDeleteUnexisting.Checked;
         }
     }
 }
