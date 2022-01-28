@@ -16,8 +16,8 @@ namespace GuessMelody
 
         private readonly CommonOpenFileDialog musicFolderBrowseDialog = new CommonOpenFileDialog(DEFAULT_MUSIC_SELECT_DIALOG_TITLE);
         //private readonly BindingSource songseCollectionBindSourse = new BindingSource();
-        private readonly Dictionary<string, bool> _songsCollection;
-
+        private readonly Dictionary<string, bool> _songsCollection;      
+        
 
         public OptionsForm(Dictionary<string, bool> songsCollection)
         {
@@ -37,7 +37,7 @@ namespace GuessMelody
 
 
         /// <summary>
-        /// При каждой загрузке формы отмечаем все песни как используемые
+        /// При каждой загрузке формы обновляем список выбранных песен (т.к. предыдущие изменения могли быть отменены)
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -50,7 +50,11 @@ namespace GuessMelody
             lvSongs.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);            
         }
 
-
+        /// <summary>
+        /// При закрытии формы сохраняем выбранный список песен (если нажата кнопка "ОК")
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OptionsForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (((e.CloseReason == CloseReason.UserClosing) || (e.CloseReason == CloseReason.None)) && 

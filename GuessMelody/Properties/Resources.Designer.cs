@@ -73,9 +73,19 @@ namespace GuessMelody.Properties {
         /// <summary>
         ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap _178_The_butterflies_of_Naath__Arthur_Bozonnet_ {
+            get {
+                object obj = ResourceManager.GetObject("_178_The_butterflies_of_Naath__Arthur_Bozonnet_", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Поиск локализованного ресурса типа System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap _178a_The_butterflies_of_Naath__Arthur_Bozonnet_ {
             get {
-                object obj = ResourceManager.GetObject("178a-The-butterflies-of-Naath-(Arthur-Bozonnet)", resourceCulture);
+                object obj = ResourceManager.GetObject("_178a_The_butterflies_of_Naath__Arthur_Bozonnet_", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

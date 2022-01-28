@@ -44,6 +44,7 @@ namespace GuessMelody
             this.btStart.TabIndex = 0;
             this.btStart.Text = "Начать игру";
             this.btStart.UseVisualStyleBackColor = true;
+            this.btStart.Click += new System.EventHandler(this.btStart_Click);
             // 
             // btClose
             // 
@@ -81,6 +82,7 @@ namespace GuessMelody
             this.MaximizeBox = false;
             this.Name = "MainForm";
             this.Text = "Угадай Мелодию";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.ResumeLayout(false);
 

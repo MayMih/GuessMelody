@@ -7,9 +7,10 @@ namespace GuessMelody
 {
     public partial class MainForm : Form
     {
-        static readonly Dictionary<string, bool> _songsCollection = new Dictionary<string, bool>();
+        private static readonly Dictionary<string, bool> _songsCollection = new Dictionary<string, bool>();
 
-        readonly OptionsForm frm = new OptionsForm(_songsCollection);
+        private readonly OptionsForm frmOpts = new OptionsForm(_songsCollection);
+        private readonly GameForm frmGame = new GameForm(_songsCollection);
 
 
         public MainForm()
@@ -23,7 +24,7 @@ namespace GuessMelody
         private void MainForm_Load(object sender, EventArgs e)
         {
             // TODO: здесь считывание из настроек
-            frm.IsSubfolderSearch = true;
+            frmOpts.IsSubfolderSearch = true;
         }
 
         private void btClose_Click(object sender, EventArgs e)
@@ -34,12 +35,34 @@ namespace GuessMelody
 
         private void btSettings_Click(object sender, EventArgs e)
         {
-            if (frm.ShowDialog() == DialogResult.OK)
+            if (frmOpts.ShowDialog() == DialogResult.OK)
             {
-                // TODO: применяем настройки
+                // Действия не требуются (пока, т.к. список сохраняется самой формой в статической переменной)
             }
         }
 
+        /// <summary>
+        /// Кнопка "Начать игру"
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btStart_Click(object sender, EventArgs e)
+        {
+            if (_songsCollection.Count == 0)
+            {
+                MessageBox.Show("Не задан список песен!", "Запуск игры невозможен", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            else
+            {
+                frmGame.ShowDialog();
+            }
+        }
+
+        private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            frmOpts?.Dispose();
+            frmGame?.Dispose();
+        }
     }
 }
  
