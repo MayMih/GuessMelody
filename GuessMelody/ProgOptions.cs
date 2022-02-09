@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Serialization;
@@ -15,6 +16,7 @@ namespace GuessMelody
     /// </summary>
     public class ProgOptions
     {
+
         #region 'Поля и константы'
 
         private const string SONGS_LIST_FILE_NAME = "songs.xml";
@@ -66,15 +68,19 @@ namespace GuessMelody
                 {
                     if (_instanse == null)
                     {
-                        _instanse = new ProgOptions() { SongDuration = DEFAULT_SONG_DURATION,
-                            GameDuration = DEFAULT_GAME_DURATION };
+                        lock (_locker)
+                        {
+                            _instanse = new ProgOptions()
+                            {
+                                SongDuration = DEFAULT_SONG_DURATION,
+                                GameDuration = DEFAULT_GAME_DURATION
+                            };
+                        }
                     }
                 }
                 return _instanse;
             }
-        }
-        
-
+        }        
 
         /// <summary>
         /// Метод асинхронной загрузки настроек из файла
@@ -84,6 +90,10 @@ namespace GuessMelody
             void Load()
             {
                 int duration = 0;
+                // это скореее всего нужно, если мы хотим перезагружать настройки программы без её перезапуска
+                //var configFile = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+                //ConfigurationManager.RefreshSection(configFile.AppSettings.SectionInformation.Name);
+
                 if (Int32.TryParse(ConfigurationManager.AppSettings.Get(nameof(GameDuration)), out duration))
                 {
                     GameDuration = duration;
@@ -160,6 +170,21 @@ namespace GuessMelody
                 ConfigurationManager.AppSettings.Set(nameof(IsSubfolderScan), IsSubfolderScan.ToString());
                 ConfigurationManager.AppSettings.Set(nameof(IsDeleteUnexisting), IsDeleteUnexisting.ToString());
                 ConfigurationManager.AppSettings.Set(nameof(LastFolder), LastFolder);
+
+                var configFile = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+                foreach (var key in ConfigurationManager.AppSettings.AllKeys)
+                {
+                    var existedKey = configFile.AppSettings.Settings[key];
+                    if (existedKey != null)
+                    {
+                        existedKey.Value = ConfigurationManager.AppSettings[key];
+                    }
+                    else
+                    {
+                        configFile.AppSettings.Settings.Add(key, ConfigurationManager.AppSettings[key]);
+                    }
+                }
+                configFile.Save();
 
                 // сохраяем список песен - он хранится в отдельном файле (в общем-то из-за этого метод и асинхронный)                
                 using (var of = File.OpenWrite(Path.Combine(Application.StartupPath, ProgOptions.SONGS_LIST_FILE_NAME)))

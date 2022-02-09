@@ -16,6 +16,7 @@ namespace GuessMelody
 
         private readonly OptionsForm frmOpts = new OptionsForm(ProgOptions.Instance);
         private readonly GameForm frmGame = new GameForm(ProgOptions.Instance);
+        private bool _isResetExit;
 
         #endregion 'Поля и константы'
 
@@ -71,9 +72,15 @@ namespace GuessMelody
 
         private void btSettings_Click(object sender, EventArgs e)
         {
-            if (frmOpts.ShowDialog() == DialogResult.OK)
+            var res = frmOpts.ShowDialog();
+            if (res == DialogResult.OK)
             {
-                // Действия не требуются (пока, т.к. список сохраняется самой формой в статической переменной)
+                // Тут будет реакция на изменение настроек, если потребуется
+            }
+            else if (res == DialogResult.Abort)
+            {
+                _isResetExit = true;
+                this.Close();
             }
         }
 
@@ -108,6 +115,10 @@ namespace GuessMelody
         /// <param name="e"></param>
         private async void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            if (_isResetExit)
+            {
+                return;
+            }
             this.UseWaitCursor = true;
             this.Controls.OfType<Control>().ToList().ForEach(ctr => ctr.Enabled = false);
             this.Update();

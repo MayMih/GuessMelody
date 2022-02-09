@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -16,8 +15,7 @@ namespace GuessMelody
 
         private readonly CommonOpenFileDialog musicFolderBrowseDialog = new CommonOpenFileDialog(DEFAULT_MUSIC_SELECT_DIALOG_TITLE);
         //private readonly BindingSource songseCollectionBindSourse = new BindingSource();
-        private readonly ProgOptions _progOpts;      
-        
+        private readonly ProgOptions _progOpts;
 
         public OptionsForm(ProgOptions progOpts)
         {
@@ -40,11 +38,7 @@ namespace GuessMelody
         /// <param name="e"></param>
         private void OptionsForm_Load(object sender, System.EventArgs e)
         {
-            cbSubfolderScan.Checked = _progOpts.IsSubfolderScan;
-            lvSongs.Items.Clear();
-            lvSongs.Items.AddRange(_progOpts.SongsCollection.Select(x => new ListViewItem(x.FileName) { 
-                Checked = x.IsChecked }).ToArray());
-            lvSongs.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);            
+            Reload();
         }
 
         /// <summary>
@@ -57,15 +51,42 @@ namespace GuessMelody
             if (((e.CloseReason == CloseReason.UserClosing) || (e.CloseReason == CloseReason.None)) && 
                 ((this.DialogResult == DialogResult.OK) || (this.DialogResult == DialogResult.Cancel)))
             {
+                e.Cancel = true;
                 if (this.DialogResult == DialogResult.OK)
-                {
+                {                   
                     _progOpts.SongsCollection.Clear();
                     foreach (ListViewItem itm in lvSongs.Items)
                     {
                         _progOpts.SongsCollection.Add((itm.Text, itm.Checked));
                     }
+                    _progOpts.IsSubfolderScan = cbSubfolderScan.Checked;
+                    _progOpts.IsDeleteUnexisting = cbDeleteUnexisting.Checked;
+                    _progOpts.IsRandomStart = cbRandomStart.Checked;
+                    int duration;
+                    String errorMes = String.Empty;
+                    if (Int32.TryParse(cmbGameDuration.Text.Trim(), out duration) && (duration > 0))
+                    {
+                        _progOpts.GameDuration = duration;
+                    }
+                    else
+                    {
+                        errorMes += " Продолжительность игры должна быть числом!";
+                    }
+                    if (Int32.TryParse(cmbSongDuration.Text.Trim(), out duration) && (duration > 0))
+                    {
+                        _progOpts.SongDuration = duration;
+                    }
+                    else
+                    {
+                        errorMes += (String.IsNullOrWhiteSpace(errorMes) ? Environment.NewLine : String.Empty) +
+                            "Время на ответ должно быть числом!";
+                    }
+                    if (!String.IsNullOrWhiteSpace(errorMes))
+                    {
+                        MessageBox.Show(errorMes, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
                 }
-                e.Cancel = true;
                 this.Hide();
             }
         }
@@ -110,6 +131,7 @@ namespace GuessMelody
                     // TODO: тут нужно по идее или сравнивать теги Исполнителя, или в качестве ключа использовать полный путь
                     // к файлу, но тогда этот файл будет добавлен несколько раз, если он находится в разных каталогах (
                     //     например песня из обычного альбома и из сборника)
+                    // UPD: Проще всего наверно будет сравнивать комбинацию Название + длительность.
                     foreach (var songFile in fileCollection)
                     {
                         var songName = Path.GetFileName(songFile);
@@ -121,6 +143,7 @@ namespace GuessMelody
                         }
                     }
                 }
+                _progOpts.LastFolder = musicFolderBrowseDialog.FileName;
             }
             catch (Exception ex)
             {
@@ -151,15 +174,69 @@ namespace GuessMelody
             lvSongs.ResumeLayout();
         }
 
-
-        private void cbSubfolderSearch_CheckedChanged(object sender, EventArgs e)
+        /// <summary>
+        /// Сохраняем "Продолжительность игры" при её изменении польз-м
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void cmbGameDuration_TextUpdate(object sender, EventArgs e)
         {
-            _progOpts.IsSubfolderScan = cbSubfolderScan.Checked;
+            int duration;
+            if (!Int32.TryParse(cmbGameDuration.Text.Trim(), out duration) || (duration < 0))
+            {
+                MessageBox.Show("Продолжительность игры должна быть числом!", "Ошибка", MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+                return;
+            }
         }
 
-        private void cbDeleteUnexisting_CheckedChanged(object sender, EventArgs e)
+        /// <summary>
+        /// Сохраняем "Время на ответ" при его изменении польз-м
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void cmbSongDuration_TextUpdate(object sender, EventArgs e)
         {
-            _progOpts.IsDeleteUnexisting = cbDeleteUnexisting.Checked;
+            int duration;
+            if (!Int32.TryParse(cmbSongDuration.Text.Trim(), out duration) || (duration < 0))
+            {
+                MessageBox.Show("Время на ответ должно быть числом!", "Ошибка", MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
+                return;
+            }
         }
+
+        private void btResetSettings_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("Вы уверены, что хотите сбросить настройки на значения по умолчанию?",
+                "Подтверждение", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK)
+            {
+                File.Delete(Path.Combine(Application.ExecutablePath) + ".config");
+                MessageBox.Show("Сейчас программа будет перезапущена для применения настроек!");
+                DialogResult = DialogResult.Abort;
+            }
+        }
+
+        /// <summary>
+        /// Метод перезагрузки настроек из файла
+        /// </summary>
+        private void Reload()
+        {
+            cbSubfolderScan.Checked = _progOpts.IsSubfolderScan;
+            cbDeleteUnexisting.Checked = _progOpts.IsDeleteUnexisting;
+            cbRandomStart.Checked = _progOpts.IsRandomStart;
+            lvSongs.Items.Clear();
+            lvSongs.Items.AddRange(_progOpts.SongsCollection.Select(x =>
+                new ListViewItem(x.FileName)
+                {
+                    Checked = x.IsChecked
+                }).ToArray());
+            lvSongs.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
+            cmbGameDuration.Text = _progOpts.GameDuration.ToString();
+            cmbSongDuration.Text = _progOpts.SongDuration.ToString();
+            musicFolderBrowseDialog.InitialDirectory = _progOpts.LastFolder;
+        }
+
+
     }
 }
