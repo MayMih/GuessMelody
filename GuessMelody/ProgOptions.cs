@@ -22,12 +22,12 @@ namespace GuessMelody
         private const string SONGS_LIST_FILE_NAME = "songs.xml";
         private const int DEFAULT_GAME_DURATION = 60;
         private const int DEFAULT_SONG_DURATION = 10;
-
+        private const int DEFAULT_VOLUME_LEVEL = 35;
 
         private static readonly object _locker = new object();
         private static ProgOptions _instanse;
         
-        private readonly XmlSerializer _songsListSerializer = new XmlSerializer(typeof(List<(string, bool)>));
+        private readonly XmlSerializer _songsListSerializer = new XmlSerializer(typeof(List<(string, bool)>));        
         private List<(string FileName, bool IsChecked)> _songsCollection = new List<(string, bool)>();
 
         #endregion 'Поля и константы'
@@ -43,6 +43,7 @@ namespace GuessMelody
         }
         public int GameDuration { get; set; }
         public int SongDuration { get; set; }
+        public int VolumeLevel { get; set; }
         public string LastFolder { get; set; }
         /// <summary>
         /// Будет ли использоваться случайная позиция при старте песни (True)
@@ -115,6 +116,15 @@ namespace GuessMelody
                 {
                     IsDeleteUnexisting = flag;
                 }
+                if (Int32.TryParse(ConfigurationManager.AppSettings.Get(nameof(VolumeLevel)), out duration))
+                {
+                    VolumeLevel = duration;
+                }
+                else
+                {
+                    VolumeLevel = DEFAULT_VOLUME_LEVEL;
+                }
+
                 LastFolder = ConfigurationManager.AppSettings.Get(nameof(LastFolder));
                 
                 if (String.IsNullOrWhiteSpace(LastFolder) || !Directory.Exists(LastFolder))
@@ -132,7 +142,7 @@ namespace GuessMelody
 
                 // загружаем список песен - он хранится в отдельном файле
                 var songsFileName = Path.Combine(Application.StartupPath, ProgOptions.SONGS_LIST_FILE_NAME);
-                if (File.Exists(songsFileName))
+                if (File.Exists(songsFileName) && ((new FileInfo(songsFileName)).Length > 0))
                 {
                     using (var sf = File.OpenRead(songsFileName))
                     {
@@ -170,6 +180,7 @@ namespace GuessMelody
                 ConfigurationManager.AppSettings.Set(nameof(IsSubfolderScan), IsSubfolderScan.ToString());
                 ConfigurationManager.AppSettings.Set(nameof(IsDeleteUnexisting), IsDeleteUnexisting.ToString());
                 ConfigurationManager.AppSettings.Set(nameof(LastFolder), LastFolder);
+                ConfigurationManager.AppSettings.Set(nameof(VolumeLevel), VolumeLevel.ToString());
 
                 var configFile = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
                 foreach (var key in ConfigurationManager.AppSettings.AllKeys)

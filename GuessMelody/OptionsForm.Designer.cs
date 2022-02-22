@@ -39,12 +39,12 @@ namespace GuessMelody
             this.colFileName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.cbDeleteUnexisting = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.btResetSettings = new System.Windows.Forms.Button();
             this.cbRandomStart = new System.Windows.Forms.CheckBox();
             this.cmbSongDuration = new System.Windows.Forms.ComboBox();
             this.cmbGameDuration = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.btResetSettings = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -172,6 +172,18 @@ namespace GuessMelody
             this.groupBox1.TabIndex = 9;
             this.groupBox1.TabStop = false;
             // 
+            // btResetSettings
+            // 
+            this.btResetSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btResetSettings.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.btResetSettings.Location = new System.Drawing.Point(362, 45);
+            this.btResetSettings.Name = "btResetSettings";
+            this.btResetSettings.Size = new System.Drawing.Size(132, 23);
+            this.btResetSettings.TabIndex = 10;
+            this.btResetSettings.Text = "Сбросить настройки";
+            this.btResetSettings.UseVisualStyleBackColor = true;
+            this.btResetSettings.Click += new System.EventHandler(this.btResetSettings_Click);
+            // 
             // cbRandomStart
             // 
             this.cbRandomStart.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
@@ -236,18 +248,6 @@ namespace GuessMelody
             this.label1.Text = "Продолжительность:";
             this.label1.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
-            // btResetSettings
-            // 
-            this.btResetSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btResetSettings.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btResetSettings.Location = new System.Drawing.Point(362, 45);
-            this.btResetSettings.Name = "btResetSettings";
-            this.btResetSettings.Size = new System.Drawing.Size(132, 23);
-            this.btResetSettings.TabIndex = 10;
-            this.btResetSettings.Text = "Сбросить настройки";
-            this.btResetSettings.UseVisualStyleBackColor = true;
-            this.btResetSettings.Click += new System.EventHandler(this.btResetSettings_Click);
-            // 
             // OptionsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -269,7 +269,7 @@ namespace GuessMelody
             this.Name = "OptionsForm";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Настройки";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OptionsForm_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.OptionsForm_FormClosed);
