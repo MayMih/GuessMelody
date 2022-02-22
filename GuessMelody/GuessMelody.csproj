@@ -83,6 +83,7 @@
     <Compile Include="GameForm.Designer.cs">
       <DependentUpon>GameForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="GameState.cs" />
     <Compile Include="ProgOptions.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>

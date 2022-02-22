@@ -74,19 +74,32 @@ namespace GuessMelody
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void btSettings_Click(object sender, EventArgs e)
+        private async void btSettings_Click(object sender, EventArgs e)
         {
             frmOpts.Location = PointToScreen(btSettings.Location);
             frmOpts.Top = Math.Max(frmOpts.Top - (frmOpts.Height / 2) - btSettings.Height, this.Top);
-            var res = frmOpts.ShowDialog();            
+            var res = frmOpts.ShowDialog();
             if (res == DialogResult.OK)
             {
                 // Тут будет реакция на изменение настроек, если потребуется
             }
+            else if (res == DialogResult.Cancel)
+            {
+                // перезагружаем настройки, на случай, если пользователь отменил изменения
+                try
+                {
+                    this.UseWaitCursor = true;
+                    this.Update();
+                    await ProgOptions.Instance.LoadAsync();
+                }
+                finally
+                {
+                    this.UseWaitCursor = false;
+                }
+            }
             else if (res == DialogResult.Abort)
             {
                 _isResetExit = true;
-                //this.Close();
                 Application.Restart();
             }
         }
@@ -105,6 +118,7 @@ namespace GuessMelody
             }
             else
             {
+                GameState.Instance.Reset();
                 frmGame.ShowDialog();
             }
         }
