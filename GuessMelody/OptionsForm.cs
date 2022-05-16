@@ -25,7 +25,7 @@ namespace GuessMelody
             musicFolderBrowseDialog.NavigateToShortcut = true;
             //songseCollectionBindSourse.DataMember = "FileName";
             //songseCollectionBindSourse.DataSource = songsCollection;
-            _progOpts = progOpts;    
+            _progOpts = progOpts;                
         }
 
         private OptionsForm() { }
@@ -41,6 +41,11 @@ namespace GuessMelody
             Reload();
         }
 
+        private void OptionsForm_Shown(object sender, EventArgs e)
+        {
+            lvSongs_SelectedIndexChanged(this, e);
+        }
+
         /// <summary>
         /// При закрытии формы сохраняем выбранный список песен (если нажата кнопка "ОК")
         /// </summary>
@@ -51,7 +56,6 @@ namespace GuessMelody
             if (((e.CloseReason == CloseReason.UserClosing) || (e.CloseReason == CloseReason.None)) && 
                 ((this.DialogResult == DialogResult.OK) || (this.DialogResult == DialogResult.Cancel)))
             {
-                e.Cancel = true;
                 if (this.DialogResult == DialogResult.OK)
                 {                   
                     _progOpts.SongsCollection.Clear();
@@ -87,7 +91,8 @@ namespace GuessMelody
                         return;
                     }
                 }
-                this.Hide();
+                //this.Hide(); - прятать форму не нужно, т.к. по умолчанию именно это и происходит - см.: 
+                //https://docs.microsoft.com/en-us/dotnet/api/system.windows.forms.form.dialogresult?view=windowsdesktop-6.0#remarks
             }
         }
 
@@ -157,11 +162,7 @@ namespace GuessMelody
             }
         }
 
-
-        private void OptionsForm_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            musicFolderBrowseDialog?.Dispose();
-        }
+        
 
 
         private void btDeleteSelected_Click(object sender, EventArgs e)
@@ -245,6 +246,14 @@ namespace GuessMelody
             musicFolderBrowseDialog.InitialDirectory = _progOpts.LastFolder;
         }
 
+        private void lvSongs_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            btDeleteSelected.Enabled = lvSongs.SelectedIndices.Count > 0;
+        }
 
+        private void btOK_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

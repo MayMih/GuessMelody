@@ -137,6 +137,7 @@ namespace GuessMelody
         private void GameForm_Shown(object sender, EventArgs e)
         {
             pbGameDuration.Maximum = ProgOptions.Instance.GameDuration;
+            pbGameDuration.Value = 0;
         }
 
         private void Instance_Player2ScoreChanged(object sender, EventArgs e)
@@ -150,7 +151,7 @@ namespace GuessMelody
         }
 
         /// <summary>
-        /// Обработчик события изменения кол-ва песен в списке, порверяет условие победы, когда песни заканчиваются
+        /// Обработчик события изменения кол-ва песен в списке, проверяет условие победы, когда песни заканчиваются.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -203,6 +204,11 @@ namespace GuessMelody
             }
         }
 
+        /// <summary>
+        /// Обработчик закрытия формы - запрашиваем подтверждение выхода, если форму закрыл пользователь при запущенной игре.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void GameForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             if ((e.CloseReason == CloseReason.None || e.CloseReason == CloseReason.UserClosing) &&
@@ -226,7 +232,7 @@ namespace GuessMelody
         }
 
         /// <summary>
-        /// Кнопка "Пауза/Продолжить"
+        /// Кнопка "Пауза/Продолжить" воспроизведение
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>

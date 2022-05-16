@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 
+using GuessMelody.Properties;
 
 namespace GuessMelody
 {
@@ -79,28 +80,29 @@ namespace GuessMelody
             frmOpts.Location = PointToScreen(btSettings.Location);
             frmOpts.Top = Math.Max(frmOpts.Top - (frmOpts.Height / 2) - btSettings.Height, this.Top);
             var res = frmOpts.ShowDialog();
-            if (res == DialogResult.OK)
+            try
             {
-                // Тут будет реакция на изменение настроек, если потребуется
-            }
-            else if (res == DialogResult.Cancel)
-            {
-                // перезагружаем настройки, на случай, если пользователь отменил изменения
-                try
+                this.UseWaitCursor = true;
+                this.Update();
+                if (res == DialogResult.OK)
                 {
-                    this.UseWaitCursor = true;
-                    this.Update();
+                    // Тут будет реакция на изменение настроек, если потребуется
+                    await ProgOptions.Instance.SaveAsync();
+                }
+                else if (res == DialogResult.Cancel)
+                {
+                    // перезагружаем настройки, на случай, если пользователь отменил изменения
                     await ProgOptions.Instance.LoadAsync();
                 }
-                finally
+                else if (res == DialogResult.Abort)
                 {
-                    this.UseWaitCursor = false;
+                    _isResetExit = true;
+                    Application.Restart();
                 }
             }
-            else if (res == DialogResult.Abort)
+            finally
             {
-                _isResetExit = true;
-                Application.Restart();
+                this.UseWaitCursor = false;
             }
         }
 

@@ -162,9 +162,9 @@ namespace GuessMelody
             // 
             // tsslPlayState
             // 
-            this.tsslPlayState.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Italic);
+            this.tsslPlayState.Font = new System.Drawing.Font("Segoe UI", 9F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))));
             this.tsslPlayState.Name = "tsslPlayState";
-            this.tsslPlayState.Size = new System.Drawing.Size(82, 17);
+            this.tsslPlayState.Size = new System.Drawing.Size(88, 17);
             this.tsslPlayState.Text = "Остановлено";
             // 
             // label3

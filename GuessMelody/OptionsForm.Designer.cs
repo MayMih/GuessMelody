@@ -107,6 +107,7 @@ namespace GuessMelody
             this.btOK.TabIndex = 5;
             this.btOK.Text = "OK";
             this.btOK.UseVisualStyleBackColor = true;
+            this.btOK.Click += new System.EventHandler(this.btOK_Click);
             // 
             // btCancel
             // 
@@ -138,6 +139,7 @@ namespace GuessMelody
             this.lvSongs.TabIndex = 7;
             this.lvSongs.UseCompatibleStateImageBehavior = false;
             this.lvSongs.View = System.Windows.Forms.View.Details;
+            this.lvSongs.SelectedIndexChanged += new System.EventHandler(this.lvSongs_SelectedIndexChanged);
             // 
             // colFileName
             // 
@@ -250,8 +252,10 @@ namespace GuessMelody
             // 
             // OptionsForm
             // 
+            this.AcceptButton = this.btOK;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.CancelButton = this.btCancel;
             this.ClientSize = new System.Drawing.Size(530, 550);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.cbDeleteUnexisting);
@@ -272,8 +276,8 @@ namespace GuessMelody
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Настройки";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OptionsForm_FormClosing);
-            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.OptionsForm_FormClosed);
             this.Load += new System.EventHandler(this.OptionsForm_Load);
+            this.Shown += new System.EventHandler(this.OptionsForm_Shown);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.ResumeLayout(false);
