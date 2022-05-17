@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Serialization;
@@ -41,7 +40,13 @@ namespace GuessMelody
         {
             get => _songsCollection;
         }
+        /// <summary>
+        /// Общая продолжительность игры (минут)
+        /// </summary>
         public int GameDuration { get; set; }
+        /// <summary>
+        /// Предельная продолжительность песни (секунд)
+        /// </summary>
         public int SongDuration { get; set; }
         public int VolumeLevel { get; set; }
         public string LastFolder { get; set; }
@@ -167,7 +172,7 @@ namespace GuessMelody
         }
 
         /// <summary>
-        /// Метоод асинхронного сохранения настроек программы
+        /// Метоод асинхронного сохранения настроек программы в файл
         /// </summary>
         /// <returns></returns>
         public Task SaveAsync()

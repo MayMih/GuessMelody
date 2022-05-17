@@ -50,6 +50,12 @@ namespace GuessMelody
             this.lbSongsCount = new System.Windows.Forms.Label();
             this.pbGameDuration = new System.Windows.Forms.ProgressBar();
             this.gameDurationTimer = new System.Windows.Forms.Timer(this.components);
+            this.label2 = new System.Windows.Forms.Label();
+            this.lbGameTimeRemaining = new System.Windows.Forms.Label();
+            this.pbSongDuration = new System.Windows.Forms.ProgressBar();
+            this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.tsslSongName = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel3 = new System.Windows.Forms.ToolStripStatusLabel();
             ((System.ComponentModel.ISupportInitialize)(this.wmpHiddenPlayer)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbVolume)).BeginInit();
             this.statusStrip1.SuspendLayout();
@@ -58,10 +64,10 @@ namespace GuessMelody
             // wmpHiddenPlayer
             // 
             this.wmpHiddenPlayer.Enabled = true;
-            this.wmpHiddenPlayer.Location = new System.Drawing.Point(25, 154);
+            this.wmpHiddenPlayer.Location = new System.Drawing.Point(11, 376);
             this.wmpHiddenPlayer.Name = "wmpHiddenPlayer";
             this.wmpHiddenPlayer.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("wmpHiddenPlayer.OcxState")));
-            this.wmpHiddenPlayer.Size = new System.Drawing.Size(193, 61);
+            this.wmpHiddenPlayer.Size = new System.Drawing.Size(193, 46);
             this.wmpHiddenPlayer.TabIndex = 4;
             this.wmpHiddenPlayer.Visible = false;
             this.wmpHiddenPlayer.PlayStateChange += new AxWMPLib._WMPOCXEvents_PlayStateChangeEventHandler(this.wmpHiddenPlayer_PlayStateChange);
@@ -69,7 +75,7 @@ namespace GuessMelody
             // btPlayNext
             // 
             this.btPlayNext.Font = new System.Drawing.Font("Comic Sans MS", 16F);
-            this.btPlayNext.Location = new System.Drawing.Point(18, 380);
+            this.btPlayNext.Location = new System.Drawing.Point(11, 458);
             this.btPlayNext.Name = "btPlayNext";
             this.btPlayNext.Size = new System.Drawing.Size(162, 69);
             this.btPlayNext.TabIndex = 5;
@@ -83,7 +89,7 @@ namespace GuessMelody
             this.tbVolume.Maximum = 100;
             this.tbVolume.Name = "tbVolume";
             this.tbVolume.Orientation = System.Windows.Forms.Orientation.Vertical;
-            this.tbVolume.Size = new System.Drawing.Size(45, 267);
+            this.tbVolume.Size = new System.Drawing.Size(45, 332);
             this.tbVolume.SmallChange = 3;
             this.tbVolume.TabIndex = 12;
             this.tbVolume.TickFrequency = 5;
@@ -135,7 +141,7 @@ namespace GuessMelody
             // 
             this.btPlayPause.AutoSize = true;
             this.btPlayPause.Font = new System.Drawing.Font("Comic Sans MS", 16F);
-            this.btPlayPause.Location = new System.Drawing.Point(236, 404);
+            this.btPlayPause.Location = new System.Drawing.Point(220, 470);
             this.btPlayPause.Name = "btPlayPause";
             this.btPlayPause.Size = new System.Drawing.Size(178, 45);
             this.btPlayPause.TabIndex = 10;
@@ -147,8 +153,11 @@ namespace GuessMelody
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel1,
-            this.tsslPlayState});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 469);
+            this.tsslPlayState,
+            this.toolStripStatusLabel3,
+            this.toolStripStatusLabel2,
+            this.tsslSongName});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 542);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(566, 22);
             this.statusStrip1.TabIndex = 11;
@@ -170,7 +179,7 @@ namespace GuessMelody
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(447, 424);
+            this.label3.Location = new System.Drawing.Point(424, 490);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(65, 13);
             this.label3.TabIndex = 13;
@@ -179,7 +188,7 @@ namespace GuessMelody
             // lbVolumeLevel
             // 
             this.lbVolumeLevel.AutoSize = true;
-            this.lbVolumeLevel.Location = new System.Drawing.Point(524, 424);
+            this.lbVolumeLevel.Location = new System.Drawing.Point(507, 490);
             this.lbVolumeLevel.Name = "lbVolumeLevel";
             this.lbVolumeLevel.Size = new System.Drawing.Size(30, 13);
             this.lbVolumeLevel.TabIndex = 14;
@@ -188,7 +197,7 @@ namespace GuessMelody
             // cbPlayOnlyOnce
             // 
             this.cbPlayOnlyOnce.AutoSize = true;
-            this.cbPlayOnlyOnce.Location = new System.Drawing.Point(31, 304);
+            this.cbPlayOnlyOnce.Location = new System.Drawing.Point(12, 323);
             this.cbPlayOnlyOnce.Name = "cbPlayOnlyOnce";
             this.cbPlayOnlyOnce.Size = new System.Drawing.Size(177, 17);
             this.cbPlayOnlyOnce.TabIndex = 15;
@@ -217,7 +226,10 @@ namespace GuessMelody
             // 
             // pbGameDuration
             // 
+            this.pbGameDuration.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.pbGameDuration.Location = new System.Drawing.Point(108, 74);
+            this.pbGameDuration.Margin = new System.Windows.Forms.Padding(3, 3, 3, 6);
             this.pbGameDuration.Name = "pbGameDuration";
             this.pbGameDuration.Size = new System.Drawing.Size(336, 23);
             this.pbGameDuration.TabIndex = 18;
@@ -227,6 +239,62 @@ namespace GuessMelody
             this.gameDurationTimer.Interval = 1000;
             this.gameDurationTimer.Tick += new System.EventHandler(this.gameDurationTimer_Tick);
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label2.Location = new System.Drawing.Point(150, 51);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(169, 17);
+            this.label2.TabIndex = 20;
+            this.label2.Text = "Времени игры осталось:";
+            // 
+            // lbGameTimeRemaining
+            // 
+            this.lbGameTimeRemaining.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lbGameTimeRemaining.AutoSize = true;
+            this.lbGameTimeRemaining.BackColor = System.Drawing.Color.Transparent;
+            this.lbGameTimeRemaining.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.lbGameTimeRemaining.Location = new System.Drawing.Point(324, 51);
+            this.lbGameTimeRemaining.Name = "lbGameTimeRemaining";
+            this.lbGameTimeRemaining.Size = new System.Drawing.Size(18, 20);
+            this.lbGameTimeRemaining.TabIndex = 19;
+            this.lbGameTimeRemaining.Text = "0";
+            // 
+            // pbSongDuration
+            // 
+            this.pbSongDuration.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.pbSongDuration.Location = new System.Drawing.Point(25, 109);
+            this.pbSongDuration.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
+            this.pbSongDuration.MarqueeAnimationSpeed = 1000;
+            this.pbSongDuration.Name = "pbSongDuration";
+            this.pbSongDuration.Size = new System.Drawing.Size(512, 21);
+            this.pbSongDuration.Step = 1;
+            this.pbSongDuration.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
+            this.pbSongDuration.TabIndex = 21;
+            // 
+            // toolStripStatusLabel2
+            // 
+            this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
+            this.toolStripStatusLabel2.Size = new System.Drawing.Size(45, 17);
+            this.toolStripStatusLabel2.Text = "Песня:";
+            // 
+            // tsslSongName
+            // 
+            this.tsslSongName.Font = new System.Drawing.Font("Segoe UI Variable Text", 9F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))));
+            this.tsslSongName.Name = "tsslSongName";
+            this.tsslSongName.Size = new System.Drawing.Size(13, 17);
+            this.tsslSongName.Text = "-";
+            // 
+            // toolStripStatusLabel3
+            // 
+            this.toolStripStatusLabel3.Name = "toolStripStatusLabel3";
+            this.toolStripStatusLabel3.Size = new System.Drawing.Size(336, 17);
+            this.toolStripStatusLabel3.Spring = true;
+            this.toolStripStatusLabel3.Text = " ";
+            // 
             // GameForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -234,7 +302,10 @@ namespace GuessMelody
             this.BackColor = System.Drawing.Color.White;
             this.BackgroundImage = global::GuessMelody.Properties.Resources._178b_The_butterflies_of_Naath__Arthur_Bozonnet_;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.ClientSize = new System.Drawing.Size(566, 491);
+            this.ClientSize = new System.Drawing.Size(566, 564);
+            this.Controls.Add(this.pbSongDuration);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.lbGameTimeRemaining);
             this.Controls.Add(this.pbGameDuration);
             this.Controls.Add(this.lbSongsCount);
             this.Controls.Add(this.label4);
@@ -293,5 +364,11 @@ namespace GuessMelody
         private System.Windows.Forms.Label lbSongsCount;
         private System.Windows.Forms.ProgressBar pbGameDuration;
         private System.Windows.Forms.Timer gameDurationTimer;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label lbGameTimeRemaining;
+        private System.Windows.Forms.ProgressBar pbSongDuration;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel3;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
+        private System.Windows.Forms.ToolStripStatusLabel tsslSongName;
     }
 }

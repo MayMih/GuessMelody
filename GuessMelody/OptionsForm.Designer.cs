@@ -29,6 +29,7 @@ namespace GuessMelody
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.btAddMusic = new System.Windows.Forms.Button();
             this.btClear = new System.Windows.Forms.Button();
             this.cbSubfolderScan = new System.Windows.Forms.CheckBox();
@@ -45,6 +46,7 @@ namespace GuessMelody
             this.cmbGameDuration = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
+            this.ttHint = new System.Windows.Forms.ToolTip(this.components);
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -228,6 +230,7 @@ namespace GuessMelody
             this.cmbGameDuration.Name = "cmbGameDuration";
             this.cmbGameDuration.Size = new System.Drawing.Size(121, 21);
             this.cmbGameDuration.TabIndex = 2;
+            this.ttHint.SetToolTip(this.cmbGameDuration, "Общая продолжительность игры (минут)");
             this.cmbGameDuration.TextUpdate += new System.EventHandler(this.cmbGameDuration_TextUpdate);
             // 
             // label2
@@ -235,9 +238,9 @@ namespace GuessMelody
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(7, 47);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(89, 13);
+            this.label2.Size = new System.Drawing.Size(116, 13);
             this.label2.TabIndex = 1;
-            this.label2.Text = "Время на ответ:";
+            this.label2.Text = "Время на ответ (сек):";
             this.label2.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // label1
@@ -249,6 +252,7 @@ namespace GuessMelody
             this.label1.TabIndex = 0;
             this.label1.Text = "Продолжительность:";
             this.label1.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.ttHint.SetToolTip(this.label1, "Общая продолжительность игры (минут)");
             // 
             // OptionsForm
             // 
@@ -302,5 +306,6 @@ namespace GuessMelody
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.CheckBox cbRandomStart;
         private System.Windows.Forms.Button btResetSettings;
+        private System.Windows.Forms.ToolTip ttHint;
     }
 }

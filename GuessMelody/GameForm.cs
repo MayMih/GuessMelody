@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows.Forms;
 
 
@@ -16,6 +17,8 @@ namespace GuessMelody
         private int _currentSongNumber;        
         private BindingList<(string FileName, bool IsChecked)> _checkedSongs;
         private readonly Random _rand = new Random();
+        private DateTime _gameEndTime, _gameStartTime;
+        private bool _isSongUnGuessed;
 
 
         #region 'Методы'
@@ -102,7 +105,7 @@ namespace GuessMelody
             this.KeyPreview = true;
             GameState.Instance.Player1ScoreChanged += Instance_Player1ScoreChanged;
             GameState.Instance.Player2ScoreChanged += Instance_Player2ScoreChanged;
-            GameState.Instance.GameHasEnded += Instance_GameHasEnded;
+            GameState.Instance.GameHasEnded += Instance_GameHasEnded;            
         }
 
         private void Instance_GameHasEnded(object sender, EventArgs e)
@@ -126,7 +129,9 @@ namespace GuessMelody
             lbSongsCount.Text = _checkedSongs.Count.ToString();
             tbVolume.Value = ProgOptions.Instance.VolumeLevel;
             lbVolumeLevel.Text = tbVolume.Value.ToString();
-            btPlayNext_Click(this, EventArgs.Empty);
+            _gameStartTime = DateTime.Now;
+            _gameEndTime = _gameStartTime.AddMinutes(ProgOptions.Instance.GameDuration);
+            btPlayNext_Click(this, EventArgs.Empty);            
         }
 
         /// <summary>
@@ -136,8 +141,9 @@ namespace GuessMelody
         /// <param name="e"></param>
         private void GameForm_Shown(object sender, EventArgs e)
         {
-            pbGameDuration.Maximum = ProgOptions.Instance.GameDuration;
-            pbGameDuration.Value = 0;
+            pbGameDuration.Maximum = ProgOptions.Instance.GameDuration * 60;
+            pbSongDuration.Maximum = ProgOptions.Instance.SongDuration;
+            pbGameDuration.Value = pbSongDuration.Value = 0;
         }
 
         private void Instance_Player2ScoreChanged(object sender, EventArgs e)
@@ -170,6 +176,8 @@ namespace GuessMelody
         /// <param name="e"></param>
         private void btPlayNext_Click(object sender, System.EventArgs e)
         {
+            _isSongUnGuessed = false;
+            pbSongDuration.Value = 0;
             ttHint.Hide(btPlayNext);            
             this.Cursor = Cursors.AppStarting;
             this.Update();
@@ -198,6 +206,9 @@ namespace GuessMelody
             btPlayPause.Text = (curState == WMPLib.WMPPlayState.wmppsPaused) || (curState == WMPLib.WMPPlayState.wmppsStopped)
                 ? "Продолжить" : (isPlaying ? "Пауза" : "");
             tsslPlayState.Text = wmpHiddenPlayer.status;
+            tsslSongName.Text = wmpHiddenPlayer.currentMedia?.name ?? "";
+            //tsslSongName.ToolTipText = wmpHiddenPlayer.currentMedia?.sourceURL ?? "";
+            //tsslSongName.Text = wmpHiddenPlayer.currentMedia?.sourceURL ?? "";
             if (!GameState.Instance.IsGameEnded)
             {
                 gameDurationTimer.Enabled = isPlaying;
@@ -275,20 +286,42 @@ namespace GuessMelody
         }
 
         /// <summary>
-        /// Обработчик общего таймера игры
+        /// Обработчик общего таймера игры (тикает каждую секунду)
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void gameDurationTimer_Tick(object sender, EventArgs e)
         {
+            if (pbSongDuration.Value < pbSongDuration.Maximum)
+            {
+                pbSongDuration.Value++;
+            }
+            else if (!_isSongUnGuessed)
+            {
+                wmpHiddenPlayer.Ctlcontrols.pause();
+                _isSongUnGuessed = true;
+                //StringBuilder songInfo = new StringBuilder();
+                //for (int i = 0; i < wmpHiddenPlayer.currentMedia.attributeCount; i++)
+                //{
+                //    var attrName = wmpHiddenPlayer.currentMedia.getAttributeName(i);
+                //    songInfo.Append(attrName).Append("\t:\t");
+                //    songInfo.AppendLine(wmpHiddenPlayer.currentMedia.getItemInfo(attrName));
+                //}
+                // TODO: похоже WMPLib выдаёт только информацию о текущем треке (его название), но не Альбом и Исполнитель
+                // для этого нужно задействовать какой-то тег сканер.
+                MessageBox.Show($@"Это был - ""{wmpHiddenPlayer.currentMedia.name}"" (из {wmpHiddenPlayer.currentMedia.sourceURL})", 
+                    "Песня НЕ угадана!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
             if (pbGameDuration.Value < pbGameDuration.Maximum)
             {
-                pbGameDuration.Value++;
+                pbGameDuration.Value++;                
+                lbGameTimeRemaining.Text = _gameEndTime.Subtract(_gameStartTime.AddSeconds(pbGameDuration.Value)).ToString();
             }
             else
             {
                 gameDurationTimer.Stop();
                 GameState.Instance.EndGame();
+                lbGameTimeRemaining.Text = "0";
             }
         }
 
