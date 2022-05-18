@@ -14,11 +14,21 @@ namespace GuessMelody
     /// </summary>
     public partial class GameForm : Form
     {
-        private int _currentSongNumber;        
-        private BindingList<(string FileName, bool IsChecked)> _checkedSongs;
+
+        #region 'Поля и константы'
+
         private readonly Random _rand = new Random();
+        private readonly StringBuilder _songInfo = new StringBuilder();
+
+        private int _currentSongNumber;        
+        private BindingList<(string FileName, bool IsChecked)> _checkedSongs;        
         private DateTime _gameEndTime, _gameStartTime;
         private bool _isSongUnGuessed;
+        private bool _isAdminForm;
+        
+        #endregion 'Поля и константы'
+
+
 
 
         #region 'Методы'
@@ -93,12 +103,18 @@ namespace GuessMelody
         #endregion 'Методы'
 
 
+        private GameForm()
+        {
+        }
+
         /// <summary>
-        /// Конструктор 
+        /// Конструктор - по умолчанию создаёт форму Распорядителя игры с заголовком "Игра"
         /// </summary>
-        public GameForm()
+        public GameForm(bool isAdminForm = true, string title = "Игра")
         {
             InitializeComponent();
+            _isAdminForm = isAdminForm;
+            this.Text = title;
             this.Icon = Program.APP_ICON;
             // определяет, будет ли воспроизведение начинаться сразу после смены пути к текущему файлу
             wmpHiddenPlayer.settings.autoStart = true;
@@ -286,6 +302,36 @@ namespace GuessMelody
         }
 
         /// <summary>
+        /// При изменении текущей композиции
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void wmpHiddenPlayer_MediaChange(object sender, AxWMPLib._WMPOCXEvents_MediaChangeEvent e)
+        {
+            var tf = default(TagLib.File);
+            try
+            {
+                tf = TagLib.File.Create((e.item as WMPLib.IWMPMedia3).sourceURL);
+                this.Text = $@"Игра - ""{tf.Tag.Title}"" - ""{tf.Tag.Album}"" - ""{tf.Tag.FirstAlbumArtist}""";
+                tsslSongName.Text = tf.Tag.Title;
+                tsslSongAlbum.Text = tf.Tag.Album;
+                tsslSongArtist.Text = tf.Tag.FirstAlbumArtist;
+                tsslSongYear.Text = tf.Tag.Year.ToString();
+            }
+            catch (Exception ex)
+            {
+                this.Text = "Игра";
+                tsslSongName.Text = tsslSongAlbum.Text = tsslSongArtist.Text = tsslSongYear.Text = "-";
+                MessageBox.Show($@"Проблемный файл: {Environment.NewLine}""{(e.item as WMPLib.IWMPMedia3)?.sourceURL}""" +
+                    Environment.NewLine + ex.Message, "Ошибка чтения тегов", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            finally
+            {
+                tf?.Dispose();
+            }
+        }
+
+        /// <summary>
         /// Обработчик общего таймера игры (тикает каждую секунду)
         /// </summary>
         /// <param name="sender"></param>
@@ -300,17 +346,29 @@ namespace GuessMelody
             {
                 wmpHiddenPlayer.Ctlcontrols.pause();
                 _isSongUnGuessed = true;
-                //StringBuilder songInfo = new StringBuilder();
-                //for (int i = 0; i < wmpHiddenPlayer.currentMedia.attributeCount; i++)
-                //{
-                //    var attrName = wmpHiddenPlayer.currentMedia.getAttributeName(i);
-                //    songInfo.Append(attrName).Append("\t:\t");
-                //    songInfo.AppendLine(wmpHiddenPlayer.currentMedia.getItemInfo(attrName));
-                //}
-                // TODO: похоже WMPLib выдаёт только информацию о текущем треке (его название), но не Альбом и Исполнитель
-                // для этого нужно задействовать какой-то тег сканер.
-                MessageBox.Show($@"Это был - ""{wmpHiddenPlayer.currentMedia.name}"" (из {wmpHiddenPlayer.currentMedia.sourceURL})", 
-                    "Песня НЕ угадана!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                _songInfo.Clear();
+                var tf = default(TagLib.File);
+                try
+                {
+                    tf = TagLib.File.Create(wmpHiddenPlayer.currentMedia.sourceURL);
+                    _songInfo.AppendFormat("{0,15}", " Альбом:").Append("\t").AppendLine(tf.Tag.Album);
+                    _songInfo.AppendFormat("{0,15}", " Название:").Append("\t").AppendLine(tf.Tag.Title);
+                    _songInfo.AppendFormat("{0,15}", " Исполнители:").Append("\t").AppendLine(String.Join(", ", tf.Tag.AlbumArtists).TrimEnd(','));
+                    _songInfo.AppendFormat("{0,15}", " Год:").Append("\t").AppendLine(tf.Tag.Year.ToString());
+                    _songInfo.AppendFormat("{0,15}", " Композитор:").Append("\t").AppendLine(tf.Tag.FirstComposer);
+                    _songInfo.AppendFormat("{0,15}", " Имя файла:").Append("\t").AppendLine(Path.GetFileName(wmpHiddenPlayer.currentMedia.sourceURL));
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($@"Проблемный файл: {Environment.NewLine}""{wmpHiddenPlayer.currentMedia.sourceURL}""" +
+                        Environment.NewLine + ex.Message, "Ошибка чтения тегов", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                finally
+                {
+                    tf?.Dispose();
+                }
+                MessageBox.Show($@"Это был - ""{wmpHiddenPlayer.currentMedia.name}""{Environment.NewLine}{Environment.NewLine}" +
+                    _songInfo.ToString(), "Песня Не угадана!", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             if (pbGameDuration.Value < pbGameDuration.Maximum)
             {

@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 
-using GuessMelody.Properties;
+using Microsoft.VisualBasic;
 
 namespace GuessMelody
 {
@@ -17,6 +18,8 @@ namespace GuessMelody
 
         private readonly OptionsForm frmOpts = new OptionsForm(ProgOptions.Instance);
         private readonly GameForm frmGame = new GameForm();
+        private readonly GameForm frmPlayer1 = new GameForm(false, "Игрок 1");
+        private readonly GameForm frmPlayer2 = new GameForm(false, "Игрок 2");
         private bool _isResetExit;
 
         #endregion 'Поля и константы'
@@ -30,6 +33,11 @@ namespace GuessMelody
         {
             InitializeComponent();            
             this.MaximumSize = this.BackgroundImage.Size;
+            frmGame.FormClosed += (ob, e) => {
+                frmPlayer1.Close();
+                frmPlayer2.Close();
+                Controls.OfType<Control>().ToList().ForEach(ctr => ctr.Enabled = true); 
+            };
         }
 
         /// <summary>
@@ -63,6 +71,19 @@ namespace GuessMelody
                 this.UseWaitCursor = false;
                 this.Controls.OfType<Control>().ToList().ForEach(ctr => ctr.Enabled = ctrState[ctr.Name]);
             }
+        }
+
+        /// <summary>
+        /// При показе формы настраиваем прозрачность меток
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <remarks>
+        /// Взято отсюда: <see cref="https://stackoverflow.com/a/53307487/2323972"/>
+        /// </remarks>
+        private void MainForm_Shown(object sender, EventArgs e)
+        {
+            lbPlayer1.BackColor = lbPlayer2.BackColor = lbPlayer1Name.BackColor = lbPlayer2Name.BackColor = Color.Transparent;
         }
 
         private void btClose_Click(object sender, EventArgs e)
@@ -121,7 +142,21 @@ namespace GuessMelody
             else
             {
                 GameState.Instance.Reset();
-                frmGame.ShowDialog();
+                this.Controls.OfType<Control>().ToList().ForEach(ctr => ctr.Enabled = false);
+                try
+                {
+                    frmGame.Show();
+                    frmPlayer1.Text = lbPlayer1Name.Text.Trim();
+                    frmPlayer1.Show();
+                    frmPlayer2.Text = lbPlayer2Name.Text.Trim();
+                    frmPlayer2.Show();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Неизвестная ошибка игрового процесса:" + ex.Message + Environment.NewLine + 
+                        Environment.NewLine + ex.ToString(), "Непредвиденная ошибка");
+                    this.Controls.OfType<Control>().ToList().ForEach(ctr => ctr.Enabled = true);
+                }
             }
         }
 
@@ -159,6 +194,12 @@ namespace GuessMelody
             {
                 this.UseWaitCursor = false;
             }
+        }
+
+        private void btAssignPlayers_Click(object sender, EventArgs e)
+        {
+            lbPlayer1Name.Text = Interaction.InputBox("Имя игрока 1", "Введите имя для Игрока 1", "Игрок 1");
+            lbPlayer2Name.Text = Interaction.InputBox("Имя игрока 2", "Введите имя для Игрока 2", "Игрок 2");
         }
     }
 }

@@ -53,12 +53,23 @@ namespace GuessMelody
             this.label2 = new System.Windows.Forms.Label();
             this.lbGameTimeRemaining = new System.Windows.Forms.Label();
             this.pbSongDuration = new System.Windows.Forms.ProgressBar();
-            this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.statusStrip2 = new System.Windows.Forms.StatusStrip();
+            this.toolStripStatusLabel5 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.tsslSongArtist = new System.Windows.Forms.ToolStripStatusLabel();
+            this.statusStrip3 = new System.Windows.Forms.StatusStrip();
+            this.toolStripStatusLabel4 = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsslSongName = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel7 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.tsslSongAlbum = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel9 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.tsslSongYear = new System.Windows.Forms.ToolStripStatusLabel();
+            this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel3 = new System.Windows.Forms.ToolStripStatusLabel();
             ((System.ComponentModel.ISupportInitialize)(this.wmpHiddenPlayer)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbVolume)).BeginInit();
             this.statusStrip1.SuspendLayout();
+            this.statusStrip2.SuspendLayout();
+            this.statusStrip3.SuspendLayout();
             this.SuspendLayout();
             // 
             // wmpHiddenPlayer
@@ -71,11 +82,12 @@ namespace GuessMelody
             this.wmpHiddenPlayer.TabIndex = 4;
             this.wmpHiddenPlayer.Visible = false;
             this.wmpHiddenPlayer.PlayStateChange += new AxWMPLib._WMPOCXEvents_PlayStateChangeEventHandler(this.wmpHiddenPlayer_PlayStateChange);
+            this.wmpHiddenPlayer.MediaChange += new AxWMPLib._WMPOCXEvents_MediaChangeEventHandler(this.wmpHiddenPlayer_MediaChange);
             // 
             // btPlayNext
             // 
             this.btPlayNext.Font = new System.Drawing.Font("Comic Sans MS", 16F);
-            this.btPlayNext.Location = new System.Drawing.Point(11, 458);
+            this.btPlayNext.Location = new System.Drawing.Point(11, 434);
             this.btPlayNext.Name = "btPlayNext";
             this.btPlayNext.Size = new System.Drawing.Size(162, 69);
             this.btPlayNext.TabIndex = 5;
@@ -141,7 +153,7 @@ namespace GuessMelody
             // 
             this.btPlayPause.AutoSize = true;
             this.btPlayPause.Font = new System.Drawing.Font("Comic Sans MS", 16F);
-            this.btPlayPause.Location = new System.Drawing.Point(220, 470);
+            this.btPlayPause.Location = new System.Drawing.Point(205, 458);
             this.btPlayPause.Name = "btPlayPause";
             this.btPlayPause.Size = new System.Drawing.Size(178, 45);
             this.btPlayPause.TabIndex = 10;
@@ -153,13 +165,11 @@ namespace GuessMelody
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel1,
-            this.tsslPlayState,
-            this.toolStripStatusLabel3,
-            this.toolStripStatusLabel2,
-            this.tsslSongName});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 542);
+            this.tsslPlayState});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 562);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(566, 22);
+            this.statusStrip1.SizingGrip = false;
             this.statusStrip1.TabIndex = 11;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -179,7 +189,7 @@ namespace GuessMelody
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(424, 490);
+            this.label3.Location = new System.Drawing.Point(423, 490);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(65, 13);
             this.label3.TabIndex = 13;
@@ -275,23 +285,105 @@ namespace GuessMelody
             this.pbSongDuration.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
             this.pbSongDuration.TabIndex = 21;
             // 
-            // toolStripStatusLabel2
+            // statusStrip2
             // 
-            this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
-            this.toolStripStatusLabel2.Size = new System.Drawing.Size(45, 17);
-            this.toolStripStatusLabel2.Text = "Песня:";
+            this.statusStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripStatusLabel2,
+            this.toolStripStatusLabel5,
+            this.tsslSongArtist,
+            this.toolStripStatusLabel9,
+            this.tsslSongYear});
+            this.statusStrip2.Location = new System.Drawing.Point(0, 540);
+            this.statusStrip2.Name = "statusStrip2";
+            this.statusStrip2.ShowItemToolTips = true;
+            this.statusStrip2.Size = new System.Drawing.Size(566, 22);
+            this.statusStrip2.SizingGrip = false;
+            this.statusStrip2.TabIndex = 22;
+            this.statusStrip2.Text = "statusStrip2";
+            // 
+            // toolStripStatusLabel5
+            // 
+            this.toolStripStatusLabel5.Name = "toolStripStatusLabel5";
+            this.toolStripStatusLabel5.Size = new System.Drawing.Size(83, 17);
+            this.toolStripStatusLabel5.Text = "Исполнитель:";
+            // 
+            // tsslSongArtist
+            // 
+            this.tsslSongArtist.AutoToolTip = true;
+            this.tsslSongArtist.Font = new System.Drawing.Font("Segoe UI Variable Text", 9F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))));
+            this.tsslSongArtist.Name = "tsslSongArtist";
+            this.tsslSongArtist.Size = new System.Drawing.Size(13, 17);
+            this.tsslSongArtist.Text = "-";
+            // 
+            // statusStrip3
+            // 
+            this.statusStrip3.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripStatusLabel3,
+            this.toolStripStatusLabel4,
+            this.tsslSongName,
+            this.toolStripStatusLabel7,
+            this.tsslSongAlbum});
+            this.statusStrip3.Location = new System.Drawing.Point(0, 518);
+            this.statusStrip3.Name = "statusStrip3";
+            this.statusStrip3.ShowItemToolTips = true;
+            this.statusStrip3.Size = new System.Drawing.Size(566, 22);
+            this.statusStrip3.SizingGrip = false;
+            this.statusStrip3.TabIndex = 23;
+            this.statusStrip3.Text = "statusStrip3";
+            // 
+            // toolStripStatusLabel4
+            // 
+            this.toolStripStatusLabel4.Name = "toolStripStatusLabel4";
+            this.toolStripStatusLabel4.Size = new System.Drawing.Size(79, 17);
+            this.toolStripStatusLabel4.Text = "Композиция:";
             // 
             // tsslSongName
             // 
+            this.tsslSongName.AutoToolTip = true;
             this.tsslSongName.Font = new System.Drawing.Font("Segoe UI Variable Text", 9F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))));
             this.tsslSongName.Name = "tsslSongName";
             this.tsslSongName.Size = new System.Drawing.Size(13, 17);
             this.tsslSongName.Text = "-";
             // 
+            // toolStripStatusLabel7
+            // 
+            this.toolStripStatusLabel7.Name = "toolStripStatusLabel7";
+            this.toolStripStatusLabel7.Size = new System.Drawing.Size(53, 17);
+            this.toolStripStatusLabel7.Text = "Альбом:";
+            // 
+            // tsslSongAlbum
+            // 
+            this.tsslSongAlbum.AutoToolTip = true;
+            this.tsslSongAlbum.Font = new System.Drawing.Font("Segoe UI Variable Text", 9F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))));
+            this.tsslSongAlbum.Name = "tsslSongAlbum";
+            this.tsslSongAlbum.Size = new System.Drawing.Size(13, 17);
+            this.tsslSongAlbum.Text = "-";
+            // 
+            // toolStripStatusLabel9
+            // 
+            this.toolStripStatusLabel9.Name = "toolStripStatusLabel9";
+            this.toolStripStatusLabel9.Size = new System.Drawing.Size(31, 17);
+            this.toolStripStatusLabel9.Text = "Год:";
+            // 
+            // tsslSongYear
+            // 
+            this.tsslSongYear.AutoToolTip = true;
+            this.tsslSongYear.Font = new System.Drawing.Font("Segoe UI Variable Text", 9F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))));
+            this.tsslSongYear.Name = "tsslSongYear";
+            this.tsslSongYear.Size = new System.Drawing.Size(13, 17);
+            this.tsslSongYear.Text = "-";
+            // 
+            // toolStripStatusLabel2
+            // 
+            this.toolStripStatusLabel2.Name = "toolStripStatusLabel2";
+            this.toolStripStatusLabel2.Size = new System.Drawing.Size(411, 17);
+            this.toolStripStatusLabel2.Spring = true;
+            this.toolStripStatusLabel2.Text = " ";
+            // 
             // toolStripStatusLabel3
             // 
             this.toolStripStatusLabel3.Name = "toolStripStatusLabel3";
-            this.toolStripStatusLabel3.Size = new System.Drawing.Size(336, 17);
+            this.toolStripStatusLabel3.Size = new System.Drawing.Size(393, 17);
             this.toolStripStatusLabel3.Spring = true;
             this.toolStripStatusLabel3.Text = " ";
             // 
@@ -302,7 +394,9 @@ namespace GuessMelody
             this.BackColor = System.Drawing.Color.White;
             this.BackgroundImage = global::GuessMelody.Properties.Resources._178b_The_butterflies_of_Naath__Arthur_Bozonnet_;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.ClientSize = new System.Drawing.Size(566, 564);
+            this.ClientSize = new System.Drawing.Size(566, 584);
+            this.Controls.Add(this.statusStrip3);
+            this.Controls.Add(this.statusStrip2);
             this.Controls.Add(this.pbSongDuration);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.lbGameTimeRemaining);
@@ -338,6 +432,10 @@ namespace GuessMelody
             ((System.ComponentModel.ISupportInitialize)(this.tbVolume)).EndInit();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
+            this.statusStrip2.ResumeLayout(false);
+            this.statusStrip2.PerformLayout();
+            this.statusStrip3.ResumeLayout(false);
+            this.statusStrip3.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -367,8 +465,17 @@ namespace GuessMelody
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label lbGameTimeRemaining;
         private System.Windows.Forms.ProgressBar pbSongDuration;
-        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel3;
-        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
+        private System.Windows.Forms.StatusStrip statusStrip2;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel5;
+        private System.Windows.Forms.ToolStripStatusLabel tsslSongArtist;
+        private System.Windows.Forms.StatusStrip statusStrip3;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel4;
         private System.Windows.Forms.ToolStripStatusLabel tsslSongName;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel7;
+        private System.Windows.Forms.ToolStripStatusLabel tsslSongAlbum;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel9;
+        private System.Windows.Forms.ToolStripStatusLabel tsslSongYear;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel2;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel3;
     }
 }
