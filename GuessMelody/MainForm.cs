@@ -6,10 +6,11 @@ using System.Windows.Forms;
 
 using Microsoft.VisualBasic;
 
+
 namespace GuessMelody
 {
     /// <summary>
-    /// 
+    /// Главная форма программы
     /// </summary>
     public partial class MainForm : Form
     {
@@ -17,9 +18,9 @@ namespace GuessMelody
         #region 'Поля и константы'
 
         private readonly OptionsForm frmOpts = new OptionsForm(ProgOptions.Instance);
-        private readonly GameForm frmGame = new GameForm();
-        private readonly GameForm frmPlayer1 = new GameForm(false, "Игрок 1");
-        private readonly GameForm frmPlayer2 = new GameForm(false, "Игрок 2");
+        internal static readonly GameForm frmGame = new GameForm();
+        private readonly PlayerForm frmPlayer1 = new PlayerForm(true);
+        private readonly PlayerForm frmPlayer2 = new PlayerForm(false);
         private bool _isResetExit;
 
         #endregion 'Поля и константы'
@@ -27,17 +28,23 @@ namespace GuessMelody
 
 
         /// <summary>
-        /// Конструктор по умолчанию
+        /// Конструктор по умолчанию - навешиваем события прекращения игры и смены имён игроков
         /// </summary>
         public MainForm()
         {
             InitializeComponent();            
             this.MaximumSize = this.BackgroundImage.Size;
-            frmGame.FormClosed += (ob, e) => {
-                frmPlayer1.Close();
-                frmPlayer2.Close();
+            frmGame.VisibleChanged += (ob, e) => {
+                if (frmGame.Visible)
+                {
+                    return;
+                }
+                frmPlayer1.Hide();
+                frmPlayer2.Hide();
                 Controls.OfType<Control>().ToList().ForEach(ctr => ctr.Enabled = true); 
             };
+            GameState.Instance.Player1NameChanged += (ob, e) => { lbPlayer1Name.Text = GameState.Instance.Player1Name; };
+            GameState.Instance.Player2NameChanged += (ob, e) => { lbPlayer2Name.Text = GameState.Instance.Player2Name; };
         }
 
         /// <summary>
@@ -164,6 +171,8 @@ namespace GuessMelody
         {
             frmOpts?.Dispose();
             frmGame?.Dispose();
+            frmPlayer1?.Dispose();
+            frmPlayer2?.Dispose();
         }
 
         /// <summary>
@@ -196,10 +205,15 @@ namespace GuessMelody
             }
         }
 
+        /// <summary>
+        /// Кпока "Назначить игроков"
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btAssignPlayers_Click(object sender, EventArgs e)
         {
-            lbPlayer1Name.Text = Interaction.InputBox("Имя игрока 1", "Введите имя для Игрока 1", "Игрок 1");
-            lbPlayer2Name.Text = Interaction.InputBox("Имя игрока 2", "Введите имя для Игрока 2", "Игрок 2");
+            GameState.Instance.Player1Name = Interaction.InputBox("Имя игрока 1", "Введите имя для Игрока 1", "Игрок 1");
+            GameState.Instance.Player2Name = Interaction.InputBox("Имя игрока 2", "Введите имя для Игрока 2", "Игрок 2");
         }
     }
 }

@@ -12,23 +12,38 @@ namespace GuessMelody
     /// <summary>
     /// Форма игрового процесса
     /// </summary>
-    public partial class GameForm : Form
+    public partial class GameForm : GameFormBase
     {
 
         #region 'Поля и константы'
 
-        private readonly Random _rand = new Random();
+        private const string DEFAULT_FORM_TITLE = "Игра";
         private readonly StringBuilder _songInfo = new StringBuilder();
 
         private int _currentSongNumber;        
         private BindingList<(string FileName, bool IsChecked)> _checkedSongs;        
-        private DateTime _gameEndTime, _gameStartTime;
         private bool _isSongUnGuessed;
-        private bool _isAdminForm;
-        
+        private string _curSongShortInfo;
+
         #endregion 'Поля и константы'
 
 
+        /// <summary>
+        /// Событие окончания текущей песни - точнее окончания его допустимого времени на отгадывание
+        /// </summary>
+        /// <remarks>
+        /// Используется главной формой игры (<see cref="GameForm"/>) для передачи игрокам информации о последней 
+        ///     неугаданной песне
+        /// </remarks>
+        internal event EventHandler<(string ShortInfo, string FullInfo)> SongHasEnded;
+        /// <summary>
+        /// Событие запуска очередной композиции
+        /// </summary>
+        internal event EventHandler NextSongStarted;
+        /// <summary>
+        /// Событие изменение состояния проигрывателя - сообщает о необходимости остановки/запуска таймера и синхронизации позиции прогрессбара.
+        /// </summary>
+        internal event EventHandler<bool> PlayStateChanged;
 
 
         #region 'Методы'
@@ -76,7 +91,7 @@ namespace GuessMelody
             {
                 return false;
             }
-            _currentSongNumber = isRandomStart ? _rand.Next(0, _checkedSongs.Count) : _currentSongNumber + 1;
+            _currentSongNumber = isRandomStart ? GameState.Instance.RGen.Next(0, _checkedSongs.Count) : _currentSongNumber + 1;
             var songItem = _checkedSongs[_currentSongNumber];
             if (songItem.IsChecked && File.Exists(songItem.FileName))
             {
@@ -100,8 +115,31 @@ namespace GuessMelody
             return true;
         }
 
+        /// <summary>
+        /// Метод запролнения инфы о Песне - внимание: очищает <see cref="_songInfo"/>
+        /// </summary>
+        private void FillSongInfo()
+        {
+            _songInfo.Clear();
+            using (var tf = TagLib.File.Create(wmpHiddenPlayer.currentMedia.sourceURL))
+            {
+                _songInfo.AppendFormat("{0,15}", " Альбом:").Append("\t").AppendLine(tf.Tag.Album);
+                _songInfo.AppendFormat("{0,15}", " Название:").Append("\t").AppendLine(tf.Tag.Title);
+                _songInfo.AppendFormat("{0,15}", " Исполнители:").Append("\t").AppendLine(String.Join(", ",
+                    tf.Tag.AlbumArtists).TrimEnd(','));
+                _songInfo.AppendFormat("{0,15}", " Год:").Append("\t").AppendLine(tf.Tag.Year.ToString());
+                _songInfo.AppendFormat("{0,15}", " Композитор:").Append("\t").AppendLine(tf.Tag.FirstComposer);
+                _songInfo.AppendFormat("{0,15}", " Имя файла:").Append("\t").AppendLine(Path.GetFileName(
+                    wmpHiddenPlayer.currentMedia.sourceURL));
+            }
+        }
+
         #endregion 'Методы'
 
+
+
+
+        #region 'Конструкторы'
 
         private GameForm()
         {
@@ -110,66 +148,44 @@ namespace GuessMelody
         /// <summary>
         /// Конструктор - по умолчанию создаёт форму Распорядителя игры с заголовком "Игра"
         /// </summary>
-        public GameForm(bool isAdminForm = true, string title = "Игра")
+        public GameForm(string title = DEFAULT_FORM_TITLE)
         {
             InitializeComponent();
-            _isAdminForm = isAdminForm;
             this.Text = title;
-            this.Icon = Program.APP_ICON;
+            //this.Icon = Program.APP_ICON;
             // определяет, будет ли воспроизведение начинаться сразу после смены пути к текущему файлу
-            wmpHiddenPlayer.settings.autoStart = true;
-            this.KeyPreview = true;
-            GameState.Instance.Player1ScoreChanged += Instance_Player1ScoreChanged;
-            GameState.Instance.Player2ScoreChanged += Instance_Player2ScoreChanged;
-            GameState.Instance.GameHasEnded += Instance_GameHasEnded;            
+            wmpHiddenPlayer.settings.autoStart = true;            
+            base.gameDurationTimer.Tick += this.gameDurationTimer_Tick;            
         }
 
-        private void Instance_GameHasEnded(object sender, EventArgs e)
-        {
-            gameDurationTimer.Stop();
-            var result = GameState.Instance.Result;
-            MessageBox.Show(btPlayPause, ("Победил" + (result == GameState.GameResult.Player1Win ? (" " + lbPlayer1.Text) :
-                (result == GameState.GameResult.Player2Win ? (" " + lbPlayer2.Text) : "а дружба!"))), "Результаты");
-        }
+        #endregion 'Конструкторы'
+
+
+
+
+        #region 'Обработчики'
 
         /// <summary>
-        /// При загрузке формы подгружаем её настройки и запускаем воспроизведение
+        /// При каждом показе формы подгружаем её настройки и запускаем воспроизведение (т.к. она "никогда" не закрывается)
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void GameForm_Load(object sender, EventArgs e)
-        {            
+        private void GameForm_VisibleChanged(object sender, EventArgs e)
+        {
+            if (!Visible)
+            {
+                return;
+            }
             _checkedSongs = new BindingList<(string FileName, bool IsChecked)>(ProgOptions.Instance.SongsCollection.
                 Where(x => x.IsChecked).ToList());
             _checkedSongs.ListChanged += _checkedSongs_ListChanged;
-            lbSongsCount.Text = _checkedSongs.Count.ToString();
+            GameState.Instance.SongsCount = _checkedSongs.Count;
             tbVolume.Value = ProgOptions.Instance.VolumeLevel;
             lbVolumeLevel.Text = tbVolume.Value.ToString();
-            _gameStartTime = DateTime.Now;
-            _gameEndTime = _gameStartTime.AddMinutes(ProgOptions.Instance.GameDuration);
-            btPlayNext_Click(this, EventArgs.Empty);            
-        }
-
-        /// <summary>
-        /// При каждом показе формы 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void GameForm_Shown(object sender, EventArgs e)
-        {
-            pbGameDuration.Maximum = ProgOptions.Instance.GameDuration * 60;
-            pbSongDuration.Maximum = ProgOptions.Instance.SongDuration;
-            pbGameDuration.Value = pbSongDuration.Value = 0;
-        }
-
-        private void Instance_Player2ScoreChanged(object sender, EventArgs e)
-        {
-            lbPlayer2Score.Text = GameState.Instance.Player2Score.ToString();
-        }
-
-        private void Instance_Player1ScoreChanged(object sender, EventArgs e)
-        {
-            lbPlayer1Score.Text = GameState.Instance.Player1Score.ToString();
+            _curSongShortInfo = String.Empty;
+            _isSongUnGuessed = false;
+            _currentSongNumber = 0;
+            btPlayNext_Click(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -179,10 +195,7 @@ namespace GuessMelody
         /// <param name="e"></param>
         private void _checkedSongs_ListChanged(object sender, ListChangedEventArgs e)
         {
-            int songsCount = _checkedSongs.Count;
-            lbSongsCount.Text = songsCount.ToString();
-            int player1Score = GameState.Instance.Player1Score;
-            int player2Score = GameState.Instance.Player2Score;            
+            GameState.Instance.SongsCount = _checkedSongs.Count;
         }
 
         /// <summary>
@@ -193,7 +206,7 @@ namespace GuessMelody
         private void btPlayNext_Click(object sender, System.EventArgs e)
         {
             _isSongUnGuessed = false;
-            pbSongDuration.Value = 0;
+            pbSongDuration.Value = 0;            
             ttHint.Hide(btPlayNext);            
             this.Cursor = Cursors.AppStarting;
             this.Update();
@@ -203,33 +216,14 @@ namespace GuessMelody
                 MessageBox.Show(btPlayPause, "Песни закончились");
                 GameState.Instance.EndGame();
             }
-            this.Cursor = Cursors.Default;
-        }
-
-
-        /// <summary>
-        /// Отображает текущий статус воспроизведения - меняет надпись на кнопке "Play|Pause"
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        /// <remarks>
-        /// См. пример здесь: <see cref="https://docs.microsoft.com/en-us/windows/win32/wmp/axwmplib-axwindowsmediaplayer-playstatechange"/>
-        /// </remarks>
-        private void wmpHiddenPlayer_PlayStateChange(object sender, AxWMPLib._WMPOCXEvents_PlayStateChangeEvent e)
-        {
-            var curState = (WMPLib.WMPPlayState)e.newState;
-            bool isPlaying = curState == WMPLib.WMPPlayState.wmppsPlaying;
-            btPlayPause.Text = (curState == WMPLib.WMPPlayState.wmppsPaused) || (curState == WMPLib.WMPPlayState.wmppsStopped)
-                ? "Продолжить" : (isPlaying ? "Пауза" : "");
-            tsslPlayState.Text = wmpHiddenPlayer.status;
-            tsslSongName.Text = wmpHiddenPlayer.currentMedia?.name ?? "";
-            //tsslSongName.ToolTipText = wmpHiddenPlayer.currentMedia?.sourceURL ?? "";
-            //tsslSongName.Text = wmpHiddenPlayer.currentMedia?.sourceURL ?? "";
-            if (!GameState.Instance.IsGameEnded)
+            else
             {
-                gameDurationTimer.Enabled = isPlaying;
+                // отправляем событие здесь, хотя логичнее было бы в момент реальной смены песни в проигрывателе, т.к.
+                // иначе клиенты получают некоторую задержку
+                NextSongStarted?.Invoke(this, EventArgs.Empty);
             }
-        }
+            this.Cursor = Cursors.Default;
+        }       
 
         /// <summary>
         /// Обработчик закрытия формы - запрашиваем подтверждение выхода, если форму закрыл пользователь при запущенной игре.
@@ -238,24 +232,29 @@ namespace GuessMelody
         /// <param name="e"></param>
         private void GameForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if ((e.CloseReason == CloseReason.None || e.CloseReason == CloseReason.UserClosing) &&
-                !GameState.Instance.IsGameEnded)
+            if (e.CloseReason == CloseReason.None || e.CloseReason == CloseReason.UserClosing)
             {
-                e.Cancel = MessageBox.Show("Вы уверены, что хотите закончить эту игру?", "Подтверждение",
-                    MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No;
+                // всегда запрещаем закрытие, т.к. эта форма показывается немодально (чтобы предотвратить вызов Dispose())
+                e.Cancel = true;
+                var res = GameState.Instance.IsGameEnded || MessageBox.Show("Вы уверены, что хотите закончить эту игру?", 
+                    "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes;
+                if (res)
+                {
+                    //При закрытии формы останавливаем воспроизведение и отвязываем обработчики события окончания песни
+                    try
+                    {
+                        _checkedSongs.Clear();
+                        wmpHiddenPlayer.Ctlcontrols.stop();
+                        gameDurationTimer.Stop();
+                    }
+                    finally
+                    {
+                        SongHasEnded = null;
+                        ProgOptions.Instance.VolumeLevel = tbVolume.Value;
+                    }
+                    this.Hide();
+                }
             }
-        }
-
-        /// <summary>
-        /// При закрытии формы останавливаем воспроизведение
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void GameForm_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            wmpHiddenPlayer.Ctlcontrols.stop();
-            ProgOptions.Instance.VolumeLevel = tbVolume.Value;
-            gameDurationTimer.Stop();
         }
 
         /// <summary>
@@ -302,6 +301,91 @@ namespace GuessMelody
         }
 
         /// <summary>
+        /// Кнопка - передать инфу о песне игрокам
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btSendInfoToPlayers_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                FillSongInfo();
+                SongHasEnded?.Invoke(this, (_curSongShortInfo, _songInfo.ToString()));
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($@"Проблемный файл: {Environment.NewLine}""{wmpHiddenPlayer.currentMedia.sourceURL}""" +
+                    Environment.NewLine + ex.Message, "Ошибка чтения тегов", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }            
+        }
+
+        /// <summary>
+        /// Обработчик общего таймера игры (тикает каждую секунду)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void gameDurationTimer_Tick(object sender, EventArgs e)
+        {            
+            if (!_isSongUnGuessed && pbSongDuration.Value >= pbSongDuration.Maximum)
+            {
+                wmpHiddenPlayer.Ctlcontrols.pause();
+                _isSongUnGuessed = true;
+                try
+                {
+                    FillSongInfo();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($@"Проблемный файл: {Environment.NewLine}""{wmpHiddenPlayer.currentMedia.sourceURL}""" +
+                        Environment.NewLine + ex.Message, "Ошибка чтения тегов", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                if (cbAlwaysShowInfoOnSongEnd.Checked)
+                {
+                    SongHasEnded?.Invoke(this, (_curSongShortInfo, _songInfo.ToString()));
+                }
+                MessageBox.Show($@"Это был - ""{wmpHiddenPlayer.currentMedia.name}""{Environment.NewLine}{Environment.NewLine}" +
+                    _songInfo.ToString(), "Песня Не угадана!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            if (pbGameDuration.Value >= pbGameDuration.Maximum)
+            {                
+                GameState.Instance.EndGame();
+            }
+        }
+
+
+        #endregion 'Обработчики'
+
+
+
+
+        #region 'Обработчики Плеера'
+
+        /// <summary>
+        /// Отображает текущий статус воспроизведения - меняет надпись на кнопке "Play|Pause"
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <remarks>
+        /// См. пример здесь: <see cref="https://docs.microsoft.com/en-us/windows/win32/wmp/axwmplib-axwindowsmediaplayer-playstatechange"/>
+        /// </remarks>
+        private void wmpHiddenPlayer_PlayStateChange(object sender, AxWMPLib._WMPOCXEvents_PlayStateChangeEvent e)
+        {
+            var curState = (WMPLib.WMPPlayState)e.newState;
+            bool isPlaying = curState == WMPLib.WMPPlayState.wmppsPlaying;
+            btPlayPause.Text = (curState == WMPLib.WMPPlayState.wmppsPaused) || (curState == WMPLib.WMPPlayState.wmppsStopped)
+                ? "Продолжить" : (isPlaying ? "Пауза" : "");
+            tsslPlayState.Text = wmpHiddenPlayer.status;
+            tsslSongName.Text = wmpHiddenPlayer.currentMedia?.name ?? "";
+            //tsslSongName.ToolTipText = wmpHiddenPlayer.currentMedia?.sourceURL ?? "";
+            //tsslSongName.Text = wmpHiddenPlayer.currentMedia?.sourceURL ?? "";
+            if (!GameState.Instance.IsGameEnded)
+            {
+                gameDurationTimer.Enabled = isPlaying;
+                PlayStateChanged?.Invoke(this, isPlaying);
+            }
+        }
+
+        /// <summary>
         /// При изменении текущей композиции
         /// </summary>
         /// <param name="sender"></param>
@@ -312,7 +396,8 @@ namespace GuessMelody
             try
             {
                 tf = TagLib.File.Create((e.item as WMPLib.IWMPMedia3).sourceURL);
-                this.Text = $@"Игра - ""{tf.Tag.Title}"" - ""{tf.Tag.Album}"" - ""{tf.Tag.FirstAlbumArtist}""";
+                _curSongShortInfo = $@"""{ tf.Tag.Title} "" - ""{ tf.Tag.Album}"" - ""{ tf.Tag.FirstAlbumArtist}""";
+                this.Text = $@"{DEFAULT_FORM_TITLE} - {_curSongShortInfo}";
                 tsslSongName.Text = tf.Tag.Title;
                 tsslSongAlbum.Text = tf.Tag.Album;
                 tsslSongArtist.Text = tf.Tag.FirstAlbumArtist;
@@ -320,7 +405,7 @@ namespace GuessMelody
             }
             catch (Exception ex)
             {
-                this.Text = "Игра";
+                this.Text = DEFAULT_FORM_TITLE;
                 tsslSongName.Text = tsslSongAlbum.Text = tsslSongArtist.Text = tsslSongYear.Text = "-";
                 MessageBox.Show($@"Проблемный файл: {Environment.NewLine}""{(e.item as WMPLib.IWMPMedia3)?.sourceURL}""" +
                     Environment.NewLine + ex.Message, "Ошибка чтения тегов", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -331,58 +416,7 @@ namespace GuessMelody
             }
         }
 
-        /// <summary>
-        /// Обработчик общего таймера игры (тикает каждую секунду)
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void gameDurationTimer_Tick(object sender, EventArgs e)
-        {
-            if (pbSongDuration.Value < pbSongDuration.Maximum)
-            {
-                pbSongDuration.Value++;
-            }
-            else if (!_isSongUnGuessed)
-            {
-                wmpHiddenPlayer.Ctlcontrols.pause();
-                _isSongUnGuessed = true;
-                _songInfo.Clear();
-                var tf = default(TagLib.File);
-                try
-                {
-                    tf = TagLib.File.Create(wmpHiddenPlayer.currentMedia.sourceURL);
-                    _songInfo.AppendFormat("{0,15}", " Альбом:").Append("\t").AppendLine(tf.Tag.Album);
-                    _songInfo.AppendFormat("{0,15}", " Название:").Append("\t").AppendLine(tf.Tag.Title);
-                    _songInfo.AppendFormat("{0,15}", " Исполнители:").Append("\t").AppendLine(String.Join(", ", tf.Tag.AlbumArtists).TrimEnd(','));
-                    _songInfo.AppendFormat("{0,15}", " Год:").Append("\t").AppendLine(tf.Tag.Year.ToString());
-                    _songInfo.AppendFormat("{0,15}", " Композитор:").Append("\t").AppendLine(tf.Tag.FirstComposer);
-                    _songInfo.AppendFormat("{0,15}", " Имя файла:").Append("\t").AppendLine(Path.GetFileName(wmpHiddenPlayer.currentMedia.sourceURL));
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($@"Проблемный файл: {Environment.NewLine}""{wmpHiddenPlayer.currentMedia.sourceURL}""" +
-                        Environment.NewLine + ex.Message, "Ошибка чтения тегов", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
-                finally
-                {
-                    tf?.Dispose();
-                }
-                MessageBox.Show($@"Это был - ""{wmpHiddenPlayer.currentMedia.name}""{Environment.NewLine}{Environment.NewLine}" +
-                    _songInfo.ToString(), "Песня Не угадана!", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            if (pbGameDuration.Value < pbGameDuration.Maximum)
-            {
-                pbGameDuration.Value++;                
-                lbGameTimeRemaining.Text = _gameEndTime.Subtract(_gameStartTime.AddSeconds(pbGameDuration.Value)).ToString();
-            }
-            else
-            {
-                gameDurationTimer.Stop();
-                GameState.Instance.EndGame();
-                lbGameTimeRemaining.Text = "0";
-            }
-        }
-
+        #endregion 'Обработчики Плеера'
 
 
     }

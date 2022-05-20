@@ -117,9 +117,9 @@ namespace GuessMelody
             this.lbPlayer1Name.Font = new System.Drawing.Font("Comic Sans MS", 12F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.lbPlayer1Name.Location = new System.Drawing.Point(294, 58);
             this.lbPlayer1Name.Name = "lbPlayer1Name";
-            this.lbPlayer1Name.Size = new System.Drawing.Size(63, 23);
+            this.lbPlayer1Name.Size = new System.Drawing.Size(62, 23);
             this.lbPlayer1Name.TabIndex = 9;
-            this.lbPlayer1Name.Text = "noname";
+            this.lbPlayer1Name.Text = "Player1";
             // 
             // lbPlayer2Name
             // 
@@ -128,9 +128,9 @@ namespace GuessMelody
             this.lbPlayer2Name.Font = new System.Drawing.Font("Comic Sans MS", 12F, System.Drawing.FontStyle.Italic, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.lbPlayer2Name.Location = new System.Drawing.Point(470, 58);
             this.lbPlayer2Name.Name = "lbPlayer2Name";
-            this.lbPlayer2Name.Size = new System.Drawing.Size(63, 23);
+            this.lbPlayer2Name.Size = new System.Drawing.Size(65, 23);
             this.lbPlayer2Name.TabIndex = 10;
-            this.lbPlayer2Name.Text = "noname";
+            this.lbPlayer2Name.Text = "Player2";
             // 
             // MainForm
             // 
