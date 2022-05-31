@@ -21,8 +21,11 @@ namespace GuessMelody
         private readonly StringBuilder _songInfo = new StringBuilder();
 
         private int _currentSongNumber;        
-        private BindingList<(string FileName, bool IsChecked)> _checkedSongs;        
-        private bool _isSongUnGuessed;
+        private BindingList<(string FileName, bool IsChecked)> _checkedSongs;  
+        /// <summary>
+        /// Признак того, что время на ответ истекло, а песню так и не угадали
+        /// </summary>
+        private bool _isSongGuessed = false;
         private string _curSongShortInfo;
 
         #endregion 'Поля и константы'
@@ -75,6 +78,7 @@ namespace GuessMelody
             }
             String key = String.Format("{{{0}}}", direction > 0 ? Keys.Up.ToString().ToUpper() :
                 Keys.Down.ToString().ToUpper());
+            this.Activate();
             tbVolume.Focus();
             SendKeys.Send(key);
         }
@@ -152,10 +156,12 @@ namespace GuessMelody
         {
             InitializeComponent();
             this.Text = title;
-            //this.Icon = Program.APP_ICON;
+            this.KeyPreview = true;
             // определяет, будет ли воспроизведение начинаться сразу после смены пути к текущему файлу
             wmpHiddenPlayer.settings.autoStart = true;            
-            base.gameDurationTimer.Tick += this.gameDurationTimer_Tick;            
+            base.gameDurationTimer.Tick += this.gameDurationTimer_Tick;
+            GameState.Instance.PlayerAnswered += Instance_PlayerAnswered;
+            GameState.Instance.GameHasEnded += Instance_GameHasEnded; 
         }
 
         #endregion 'Конструкторы'
@@ -172,8 +178,9 @@ namespace GuessMelody
         /// <param name="e"></param>
         private void GameForm_VisibleChanged(object sender, EventArgs e)
         {
-            if (!Visible)
-            {
+            if (!Visible || !btPlayNext.Enabled)    // вторая проверка - это по сути костыль - попытка побороть повторный
+                                                    // вход в обработчик при пустом списке песен на старте
+            {                
                 return;
             }
             _checkedSongs = new BindingList<(string FileName, bool IsChecked)>(ProgOptions.Instance.SongsCollection.
@@ -183,9 +190,56 @@ namespace GuessMelody
             tbVolume.Value = ProgOptions.Instance.VolumeLevel;
             lbVolumeLevel.Text = tbVolume.Value.ToString();
             _curSongShortInfo = String.Empty;
-            _isSongUnGuessed = false;
+            _isSongGuessed = false;
             _currentSongNumber = 0;
             btPlayNext_Click(this, EventArgs.Empty);
+        }
+
+        /// <summary>
+        /// Для каждого игрока показываем сообщение о завершении Игры
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Instance_GameHasEnded(object sender, EventArgs e)
+        {
+            gameDurationTimer.Stop();
+            var result = GameState.Instance.Result;
+            MessageBox.Show(this, ("Победил" + (result == GameState.GameResult.Player1Win ? (" " + lbPlayer1.Text) :
+                (result == GameState.GameResult.Player2Win ? (" " + lbPlayer2.Text) : "а дружба!"))), "Результаты");
+        }
+
+        /// <summary>
+        /// Обработчик запроса пользователя на право ответа - прибавляет счётчик игрока в случае правильного ответа
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Instance_PlayerAnswered(object sender, PlayerForm e)
+        {
+            // Запрещаем игрокам жать кнопки после того, как песня уже угадана
+            if (_isSongGuessed)
+            {
+                return;
+            }
+            wmpHiddenPlayer.Ctlcontrols.pause();
+            var res = MessageBox.Show("Игрок ответил верно?", "Игрок \"" + e.PlayerName + "\" запросил право на ответ!", 
+                MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (res == DialogResult.Yes)
+            {
+                _isSongGuessed = true;
+                if (e.IsFirstPlayer)
+                {
+                    GameState.Instance.Player1Score++;
+                }
+                else
+                {
+                    GameState.Instance.Player2Score++;
+                }
+                btSendInfoToPlayers_Click(this, EventArgs.Empty);
+            }
+            if (!_isSongGuessed && cbAutoResumeAfterWrongAsnwer.Checked)
+            {
+                wmpHiddenPlayer.Ctlcontrols.play();
+            }
         }
 
         /// <summary>
@@ -205,7 +259,7 @@ namespace GuessMelody
         /// <param name="e"></param>
         private void btPlayNext_Click(object sender, System.EventArgs e)
         {
-            _isSongUnGuessed = false;
+            _isSongGuessed = false;
             pbSongDuration.Value = 0;            
             ttHint.Hide(btPlayNext);            
             this.Cursor = Cursors.AppStarting;
@@ -242,7 +296,7 @@ namespace GuessMelody
                 {
                     //При закрытии формы останавливаем воспроизведение и отвязываем обработчики события окончания песни
                     try
-                    {
+                    {                        
                         _checkedSongs.Clear();
                         wmpHiddenPlayer.Ctlcontrols.stop();
                         gameDurationTimer.Stop();
@@ -250,9 +304,13 @@ namespace GuessMelody
                     finally
                     {
                         SongHasEnded = null;
-                        ProgOptions.Instance.VolumeLevel = tbVolume.Value;
-                    }
-                    this.Hide();
+                        ProgOptions.Instance.VolumeLevel = tbVolume.Value;                        
+                        if (!GameState.Instance.IsGameEnded)
+                        {
+                            GameState.Instance.EndGame();
+                        }
+                        this.Hide();
+                    }                    
                 }
             }
         }
@@ -326,10 +384,10 @@ namespace GuessMelody
         /// <param name="e"></param>
         private void gameDurationTimer_Tick(object sender, EventArgs e)
         {            
-            if (!_isSongUnGuessed && pbSongDuration.Value >= pbSongDuration.Maximum)
+            if (!_isSongGuessed && pbSongDuration.Value >= pbSongDuration.Maximum)
             {
                 wmpHiddenPlayer.Ctlcontrols.pause();
-                _isSongUnGuessed = true;
+                //_isSongGuessed = true;
                 try
                 {
                     FillSongInfo();

@@ -1,5 +1,5 @@
 ﻿using System;
-
+using System.Windows.Forms;
 
 namespace GuessMelody
 {
@@ -45,6 +45,7 @@ namespace GuessMelody
         public event EventHandler Player2NameChanged;
         public event EventHandler GameHasEnded;
         public event EventHandler SongsCountChanged;
+        public event EventHandler<PlayerForm> PlayerAnswered;
 
         #endregion 'События'
 
@@ -114,6 +115,15 @@ namespace GuessMelody
             }
         }
 
+        /// <summary>
+        /// Кнопка активации ответа Игрока 1
+        /// </summary>
+        public Keys Player1Key { get; internal set; }
+        /// <summary>
+        /// Кнопка активации ответа Игрока 2
+        /// </summary>
+        public Keys Player2Key { get; internal set; }
+
         #endregion 'Свойства'
 
 
@@ -147,6 +157,11 @@ namespace GuessMelody
             Player2NameChanged?.Invoke(this, empty);
         }
 
+        internal void OnPlayerAnswered(PlayerForm senderForm)
+        {
+            PlayerAnswered?.Invoke(this, senderForm);
+        }
+
         /// <summary>
         /// Сбрасывает состояние игры
         /// </summary>
@@ -154,6 +169,7 @@ namespace GuessMelody
         {
             _player1Score = _player2Score = _songsCount = 0;
             _isGameEnded = false;
+            Player1Key = Player2Key = Keys.None;
             // Отвязываем все обработчики!
             //Player1ScoreChanged = null;
             //Player2ScoreChanged = null;

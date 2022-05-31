@@ -30,18 +30,18 @@ namespace GuessMelody
         private void InitializeComponent()
         {
             this.btRenamePlayer = new System.Windows.Forms.Button();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.gbPlayerControls = new System.Windows.Forms.GroupBox();
             this.comboBox3 = new System.Windows.Forms.ComboBox();
             this.label5 = new System.Windows.Forms.Label();
             this.comboBox2 = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.cbAllowEditing = new System.Windows.Forms.CheckBox();
+            this.cmbAnswerKey = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
             this.btChangeColor = new System.Windows.Forms.Button();
             this.lbSongInfoCaption = new System.Windows.Forms.Label();
             this.txtSongInfo = new System.Windows.Forms.TextBox();
-            this.groupBox1.SuspendLayout();
+            this.gbPlayerControls.SuspendLayout();
             this.SuspendLayout();
             // 
             // pbSongDuration
@@ -83,21 +83,21 @@ namespace GuessMelody
             this.btRenamePlayer.UseVisualStyleBackColor = true;
             this.btRenamePlayer.Click += new System.EventHandler(this.btRenamePlayer_Click);
             // 
-            // groupBox1
+            // gbPlayerControls
             // 
-            this.groupBox1.Controls.Add(this.comboBox3);
-            this.groupBox1.Controls.Add(this.label5);
-            this.groupBox1.Controls.Add(this.comboBox2);
-            this.groupBox1.Controls.Add(this.label3);
-            this.groupBox1.Controls.Add(this.checkBox1);
-            this.groupBox1.Controls.Add(this.comboBox1);
-            this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Location = new System.Drawing.Point(180, 158);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(333, 156);
-            this.groupBox1.TabIndex = 34;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Настройки управления";
+            this.gbPlayerControls.Controls.Add(this.comboBox3);
+            this.gbPlayerControls.Controls.Add(this.label5);
+            this.gbPlayerControls.Controls.Add(this.comboBox2);
+            this.gbPlayerControls.Controls.Add(this.label3);
+            this.gbPlayerControls.Controls.Add(this.cbAllowEditing);
+            this.gbPlayerControls.Controls.Add(this.cmbAnswerKey);
+            this.gbPlayerControls.Controls.Add(this.label1);
+            this.gbPlayerControls.Location = new System.Drawing.Point(180, 158);
+            this.gbPlayerControls.Name = "gbPlayerControls";
+            this.gbPlayerControls.Size = new System.Drawing.Size(333, 156);
+            this.gbPlayerControls.TabIndex = 34;
+            this.gbPlayerControls.TabStop = false;
+            this.gbPlayerControls.Text = "Настройки управления";
             // 
             // comboBox3
             // 
@@ -135,24 +135,27 @@ namespace GuessMelody
             this.label3.TabIndex = 3;
             this.label3.Text = "Устройство ответа:";
             // 
-            // checkBox1
+            // cbAllowEditing
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(9, 133);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(168, 17);
-            this.checkBox1.TabIndex = 2;
-            this.checkBox1.Text = "Разрешить редактирование";
-            this.checkBox1.UseVisualStyleBackColor = true;
+            this.cbAllowEditing.AutoSize = true;
+            this.cbAllowEditing.Location = new System.Drawing.Point(9, 133);
+            this.cbAllowEditing.Name = "cbAllowEditing";
+            this.cbAllowEditing.Size = new System.Drawing.Size(168, 17);
+            this.cbAllowEditing.TabIndex = 2;
+            this.cbAllowEditing.Text = "Разрешить редактирование";
+            this.cbAllowEditing.UseVisualStyleBackColor = true;
+            this.cbAllowEditing.CheckedChanged += new System.EventHandler(this.cbAllowEditing_CheckedChanged);
             // 
-            // comboBox1
+            // cmbAnswerKey
             // 
-            this.comboBox1.Enabled = false;
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(113, 26);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(121, 21);
-            this.comboBox1.TabIndex = 1;
+            this.cmbAnswerKey.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbAnswerKey.Enabled = false;
+            this.cmbAnswerKey.FormattingEnabled = true;
+            this.cmbAnswerKey.Location = new System.Drawing.Point(113, 26);
+            this.cmbAnswerKey.Name = "cmbAnswerKey";
+            this.cmbAnswerKey.Size = new System.Drawing.Size(214, 21);
+            this.cmbAnswerKey.TabIndex = 1;
+            this.cmbAnswerKey.SelectionChangeCommitted += new System.EventHandler(this.cmbAnswerKey_SelectionChangeCommitted);
             // 
             // label1
             // 
@@ -176,21 +179,21 @@ namespace GuessMelody
             // lbSongInfoCaption
             // 
             this.lbSongInfoCaption.AutoSize = true;
-            this.lbSongInfoCaption.Location = new System.Drawing.Point(123, 334);
+            this.lbSongInfoCaption.Location = new System.Drawing.Point(35, 334);
             this.lbSongInfoCaption.Name = "lbSongInfoCaption";
-            this.lbSongInfoCaption.Size = new System.Drawing.Size(42, 13);
+            this.lbSongInfoCaption.Size = new System.Drawing.Size(70, 13);
             this.lbSongInfoCaption.TabIndex = 37;
-            this.lbSongInfoCaption.Text = "Песня:";
+            this.lbSongInfoCaption.Text = "Композиция";
             // 
             // txtSongInfo
             // 
             this.txtSongInfo.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.txtSongInfo.Location = new System.Drawing.Point(180, 332);
+            this.txtSongInfo.Location = new System.Drawing.Point(111, 332);
             this.txtSongInfo.Multiline = true;
             this.txtSongInfo.Name = "txtSongInfo";
             this.txtSongInfo.ReadOnly = true;
             this.txtSongInfo.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.txtSongInfo.Size = new System.Drawing.Size(333, 106);
+            this.txtSongInfo.Size = new System.Drawing.Size(402, 106);
             this.txtSongInfo.TabIndex = 38;
             this.txtSongInfo.TabStop = false;
             // 
@@ -203,10 +206,11 @@ namespace GuessMelody
             this.Controls.Add(this.lbSongInfoCaption);
             this.Controls.Add(this.btChangeColor);
             this.Controls.Add(this.btRenamePlayer);
-            this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.gbPlayerControls);
             this.Name = "PlayerForm";
             this.Text = "PlayerForm";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.PlayerForm_FormClosing);
+            this.Load += new System.EventHandler(this.PlayerForm_Load);
             this.VisibleChanged += new System.EventHandler(this.PlayerForm_VisibleChanged);
             this.Controls.SetChildIndex(this.lbPlayer1, 0);
             this.Controls.SetChildIndex(this.lbPlayer2, 0);
@@ -218,13 +222,13 @@ namespace GuessMelody
             this.Controls.SetChildIndex(this.lbGameTimeRemaining, 0);
             this.Controls.SetChildIndex(this.label2, 0);
             this.Controls.SetChildIndex(this.pbSongDuration, 0);
-            this.Controls.SetChildIndex(this.groupBox1, 0);
+            this.Controls.SetChildIndex(this.gbPlayerControls, 0);
             this.Controls.SetChildIndex(this.btRenamePlayer, 0);
             this.Controls.SetChildIndex(this.btChangeColor, 0);
             this.Controls.SetChildIndex(this.lbSongInfoCaption, 0);
             this.Controls.SetChildIndex(this.txtSongInfo, 0);
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
+            this.gbPlayerControls.ResumeLayout(false);
+            this.gbPlayerControls.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -233,13 +237,13 @@ namespace GuessMelody
         #endregion
 
         private System.Windows.Forms.Button btRenamePlayer;
-        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.GroupBox gbPlayerControls;
         private System.Windows.Forms.ComboBox comboBox3;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.ComboBox comboBox2;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.CheckBox checkBox1;
-        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.CheckBox cbAllowEditing;
+        private System.Windows.Forms.ComboBox cmbAnswerKey;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btChangeColor;
         private System.Windows.Forms.Label lbSongInfoCaption;

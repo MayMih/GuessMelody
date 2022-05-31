@@ -17,10 +17,12 @@ namespace GuessMelody
 
         #region 'Поля и константы'
 
-        private readonly OptionsForm frmOpts = new OptionsForm(ProgOptions.Instance);
         internal static readonly GameForm frmGame = new GameForm();
-        private readonly PlayerForm frmPlayer1 = new PlayerForm(true);
-        private readonly PlayerForm frmPlayer2 = new PlayerForm(false);
+        internal static readonly PlayerForm frmPlayer1 = new PlayerForm(true);
+        internal static readonly PlayerForm frmPlayer2 = new PlayerForm(false);
+
+        private readonly OptionsForm frmOpts = new OptionsForm(ProgOptions.Instance);  
+        
         private bool _isResetExit;
 
         #endregion 'Поля и константы'
@@ -160,7 +162,7 @@ namespace GuessMelody
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Неизвестная ошибка игрового процесса:" + ex.Message + Environment.NewLine + 
+                    MessageBox.Show("Неизвестная ошибка игрового процесса:" + ex.Message + Environment.NewLine +
                         Environment.NewLine + ex.ToString(), "Непредвиденная ошибка");
                     this.Controls.OfType<Control>().ToList().ForEach(ctr => ctr.Enabled = true);
                 }
@@ -185,6 +187,14 @@ namespace GuessMelody
             if (_isResetExit)
             {
                 return;
+            }
+            else if ((e.CloseReason == CloseReason.None || e.CloseReason == CloseReason.UserClosing) &&
+                !GameState.Instance.IsGameEnded && frmGame.Visible)
+            {
+                e.Cancel = true;
+                frmGame.Show();                
+                frmGame.BringToFront();
+                frmGame.Close();
             }
             this.UseWaitCursor = true;
             this.Controls.OfType<Control>().ToList().ForEach(ctr => ctr.Enabled = false);

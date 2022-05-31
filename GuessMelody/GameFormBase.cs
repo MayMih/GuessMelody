@@ -29,8 +29,7 @@ namespace GuessMelody
                 lbPlayer2Score.Text = GameState.Instance.Player2Score.ToString();
             };
             GameState.Instance.Player1NameChanged += (ob, e) => { lbPlayer1.Text = GameState.Instance.Player1Name; };
-            GameState.Instance.Player2NameChanged += (ob, e) => { lbPlayer2.Text = GameState.Instance.Player2Name; };
-            GameState.Instance.GameHasEnded += Instance_GameHasEnded;
+            GameState.Instance.Player2NameChanged += (ob, e) => { lbPlayer2.Text = GameState.Instance.Player2Name; };            
             GameState.Instance.SongsCountChanged += (ob, e) => { lbSongsCount.Text = GameState.Instance.SongsCount.ToString(); };
         }
 
@@ -55,19 +54,6 @@ namespace GuessMelody
         }
 
         /// <summary>
-        /// Для каждого игрока показываем сообщение о завершении Игры
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Instance_GameHasEnded(object sender, EventArgs e)
-        {
-            gameDurationTimer.Stop();
-            var result = GameState.Instance.Result;
-            MessageBox.Show(this, ("Победил" + (result == GameState.GameResult.Player1Win ? (" " + lbPlayer1.Text) :
-                (result == GameState.GameResult.Player2Win ? (" " + lbPlayer2.Text) : "а дружба!"))), "Результаты");
-        }
-
-        /// <summary>
         /// Обработчик таймера игры - управляет прогресс-барами
         /// </summary>
         /// <param name="sender"></param>
@@ -89,5 +75,22 @@ namespace GuessMelody
                 lbGameTimeRemaining.Text = "0";
             }
         }
+
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            if (e.KeyCode == GameState.Instance.Player1Key)
+            {
+                GameState.Instance.OnPlayerAnswered(MainForm.frmPlayer1);
+            }
+            else if (e.KeyCode == GameState.Instance.Player2Key)
+            {
+                GameState.Instance.OnPlayerAnswered(MainForm.frmPlayer2);
+            }
+            else
+            {
+                base.OnKeyDown(e);
+            }
+        }
+
     }
 }
