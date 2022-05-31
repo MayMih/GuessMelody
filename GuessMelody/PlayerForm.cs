@@ -65,7 +65,8 @@ namespace GuessMelody
                 (Keys.Back, "\"Backspace\""), (Keys.Tab, "\"Tab\""), (Keys.Escape, "\"Esc\""), (Keys.Delete, "\"Del\""),
                 (Keys.Insert, "\"Insert\""), (Keys.Multiply, "\"Умножить (*)\""), (Keys.Space, "\"Пробел\""),
                 (Keys.XButton1, "\"Кнопка мыши 4\""), (Keys.XButton2, "\"Кнопка мыши 5\""),
-                (Keys.RButton, "\"Правая кнопка мыши\""), (Keys.MButton, "\"Средняя кнопка мыши\""),
+                //(Keys.RButton, "\"Правая кнопка мыши\""),     // к сожалению ПКМ использовать нельзя - забито под контекстное меню,
+                //(Keys.MButton, "\"Средняя кнопка мыши\""),    // да и вообще - давать польз-м мыши не логично - она у ведущего.
             };
             int j = 0;
             for (var i = Keys.NumPad0; i <= Keys.NumPad9; i++)

@@ -221,8 +221,8 @@ namespace GuessMelody
                 return;
             }
             wmpHiddenPlayer.Ctlcontrols.pause();
-            var res = MessageBox.Show("Игрок ответил верно?", "Игрок \"" + e.PlayerName + "\" запросил право на ответ!", 
-                MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            var res = MessageBox.Show("Игрок \"" + e.PlayerName + "\" ответил верно?", "Игрок \"" + e.PlayerName + 
+                "\" запросил право на ответ!", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (res == DialogResult.Yes)
             {
                 _isSongGuessed = true;
@@ -384,10 +384,11 @@ namespace GuessMelody
         /// <param name="e"></param>
         private void gameDurationTimer_Tick(object sender, EventArgs e)
         {            
-            if (!_isSongGuessed && pbSongDuration.Value >= pbSongDuration.Maximum)
+            if (!_isSongGuessed && (pbSongDuration.Value >= pbSongDuration.Maximum))
             {
+                _isSongGuessed = true;  // отмечаем песню как угаданную по истечению таймера, чтобы не дать людям клацать
+                                        // впустую и для прекращения реакции на таймер песни, пока не запустится следующая.
                 wmpHiddenPlayer.Ctlcontrols.pause();
-                //_isSongGuessed = true;
                 try
                 {
                     FillSongInfo();
