@@ -27,6 +27,9 @@ namespace GuessMelody
         private string _player1Name = "Игрок 1";
         private string _player2Name = "Игрок 2";
         private int _songsCount = 0;
+        private bool _isPlayer1Ready;
+        private bool _isPlayer2Ready;
+
         /// <summary>
         /// Обощённый генератор случайных чисел
         /// </summary>
@@ -39,6 +42,8 @@ namespace GuessMelody
 
         #region 'События'
 
+        // TODO: для расширения на произвольное кол-во игроков логично перейти от событий для отдельных игроков к общему
+        //  событию с параметром-номером игрока
         public event EventHandler Player1ScoreChanged;
         public event EventHandler Player2ScoreChanged;
         public event EventHandler Player1NameChanged;
@@ -46,6 +51,8 @@ namespace GuessMelody
         public event EventHandler GameHasEnded;
         public event EventHandler SongsCountChanged;
         public event EventHandler<PlayerForm> PlayerAnswered;
+        public event EventHandler<bool> Player1ReadyStateChanged;
+        public event EventHandler<bool> Player2ReadyStateChanged;
 
         #endregion 'События'
 
@@ -97,7 +104,7 @@ namespace GuessMelody
         /// <summary>
         /// Расчётное свойство - НЕ является признаком окончания игры!
         /// </summary>
-        public GameResult Result 
+        public GameResult Result
         {
             get => _player1Score > _player2Score ? GameResult.Player1Win : (_player1Score < _player2Score ?
                 GameResult.Player2Win : GameResult.Parity);
@@ -118,16 +125,37 @@ namespace GuessMelody
         /// <summary>
         /// Кнопка активации ответа Игрока 1
         /// </summary>
-        public Keys Player1Key { 
-            get; 
-            internal set; 
+        public Keys Player1Key
+        {
+            get;
+            internal set;
         }
         /// <summary>
         /// Кнопка активации ответа Игрока 2
         /// </summary>
         public Keys Player2Key { get; internal set; }
 
-        public bool IsPlayersReady => Player1Key != Player2Key;
+        public bool IsPlayersReady => IsPlayer1Ready && IsPlayer2Ready && (Player1Key != Player2Key);
+
+        public bool IsPlayer1Ready 
+        { 
+            get => _isPlayer1Ready; 
+            internal set 
+            {
+                _isPlayer1Ready = value;
+                OnPlayer1ReadyStateChanged(value);
+            }
+        }        
+
+        public bool IsPlayer2Ready 
+        { 
+            get => _isPlayer2Ready;
+            internal set
+            {
+                _isPlayer2Ready = value;
+                OnPlayer2ReadyStateChanged(value);
+            }
+        }
 
         #endregion 'Свойства'
 
@@ -136,6 +164,15 @@ namespace GuessMelody
 
         #region 'Методы'
 
+        private void OnPlayer1ReadyStateChanged(bool value)
+        {
+            Player1ReadyStateChanged?.Invoke(this, value);
+        }
+
+        private void OnPlayer2ReadyStateChanged(bool value)
+        {
+            Player2ReadyStateChanged?.Invoke(this, value);
+        }
 
         private void OnSongsCountCanged(EventArgs empty)
         {

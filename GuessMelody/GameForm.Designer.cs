@@ -29,10 +29,8 @@ namespace GuessMelody
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GameForm));
             this.btPlayNext = new System.Windows.Forms.Button();
-            this.ttHint = new System.Windows.Forms.ToolTip(this.components);
             this.tbVolume = new System.Windows.Forms.TrackBar();
             this.btSendInfoToPlayers = new System.Windows.Forms.Button();
             this.btPlayPause = new System.Windows.Forms.Button();
@@ -57,6 +55,8 @@ namespace GuessMelody
             this.wmpHiddenPlayer = new AxWMPLib.AxWindowsMediaPlayer();
             this.cbAlwaysShowInfoOnSongEnd = new System.Windows.Forms.CheckBox();
             this.cbAutoResumeAfterWrongAsnwer = new System.Windows.Forms.CheckBox();
+            this.cbPlayer1Ready = new System.Windows.Forms.CheckBox();
+            this.cbPlayer2Ready = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.tbVolume)).BeginInit();
             this.statusStrip1.SuspendLayout();
             this.statusStrip2.SuspendLayout();
@@ -118,7 +118,6 @@ namespace GuessMelody
             this.tbVolume.TabIndex = 12;
             this.tbVolume.TickFrequency = 5;
             this.tbVolume.TickStyle = System.Windows.Forms.TickStyle.Both;
-            this.ttHint.SetToolTip(this.tbVolume, "Уровень громкости (можно регулировать кнопками Num+|Num-)");
             this.tbVolume.ValueChanged += new System.EventHandler(this.tbVolume_ValueChanged);
             // 
             // btSendInfoToPlayers
@@ -129,7 +128,6 @@ namespace GuessMelody
             this.btSendInfoToPlayers.Size = new System.Drawing.Size(106, 92);
             this.btSendInfoToPlayers.TabIndex = 32;
             this.btSendInfoToPlayers.Text = "Показать инфо игрокам";
-            this.ttHint.SetToolTip(this.btSendInfoToPlayers, "Передаёт игрокам информацию о текущей песни");
             this.btSendInfoToPlayers.UseVisualStyleBackColor = true;
             this.btSendInfoToPlayers.Click += new System.EventHandler(this.btSendInfoToPlayers_Click);
             // 
@@ -337,6 +335,27 @@ namespace GuessMelody
             this.cbAutoResumeAfterWrongAsnwer.Text = "Авто Play после неправильного ответа";
             this.cbAutoResumeAfterWrongAsnwer.UseVisualStyleBackColor = true;
             // 
+            // cbPlayer1Ready
+            // 
+            this.cbPlayer1Ready.AutoSize = true;
+            this.cbPlayer1Ready.Enabled = false;
+            this.cbPlayer1Ready.Location = new System.Drawing.Point(111, 23);
+            this.cbPlayer1Ready.Name = "cbPlayer1Ready";
+            this.cbPlayer1Ready.Size = new System.Drawing.Size(15, 14);
+            this.cbPlayer1Ready.TabIndex = 35;
+            this.cbPlayer1Ready.UseVisualStyleBackColor = true;
+            // 
+            // cbPlayer2Ready
+            // 
+            this.cbPlayer2Ready.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.cbPlayer2Ready.AutoSize = true;
+            this.cbPlayer2Ready.Enabled = false;
+            this.cbPlayer2Ready.Location = new System.Drawing.Point(479, 22);
+            this.cbPlayer2Ready.Name = "cbPlayer2Ready";
+            this.cbPlayer2Ready.Size = new System.Drawing.Size(15, 14);
+            this.cbPlayer2Ready.TabIndex = 37;
+            this.cbPlayer2Ready.UseVisualStyleBackColor = true;
+            // 
             // GameForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -345,6 +364,8 @@ namespace GuessMelody
             this.BackgroundImage = global::GuessMelody.Properties.Resources._178b_The_butterflies_of_Naath__Arthur_Bozonnet_;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.ClientSize = new System.Drawing.Size(602, 584);
+            this.Controls.Add(this.cbPlayer2Ready);
+            this.Controls.Add(this.cbPlayer1Ready);
             this.Controls.Add(this.cbAutoResumeAfterWrongAsnwer);
             this.Controls.Add(this.cbAlwaysShowInfoOnSongEnd);
             this.Controls.Add(this.btSendInfoToPlayers);
@@ -392,6 +413,8 @@ namespace GuessMelody
             this.Controls.SetChildIndex(this.btSendInfoToPlayers, 0);
             this.Controls.SetChildIndex(this.cbAlwaysShowInfoOnSongEnd, 0);
             this.Controls.SetChildIndex(this.cbAutoResumeAfterWrongAsnwer, 0);
+            this.Controls.SetChildIndex(this.cbPlayer1Ready, 0);
+            this.Controls.SetChildIndex(this.cbPlayer2Ready, 0);
             ((System.ComponentModel.ISupportInitialize)(this.tbVolume)).EndInit();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
@@ -409,7 +432,6 @@ namespace GuessMelody
 
         private AxWMPLib.AxWindowsMediaPlayer wmpHiddenPlayer;
         private System.Windows.Forms.Button btPlayNext;
-        private System.Windows.Forms.ToolTip ttHint;
         private System.Windows.Forms.Button btPlayPause;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
@@ -433,5 +455,7 @@ namespace GuessMelody
         private System.Windows.Forms.Button btSendInfoToPlayers;
         private System.Windows.Forms.CheckBox cbAlwaysShowInfoOnSongEnd;
         private System.Windows.Forms.CheckBox cbAutoResumeAfterWrongAsnwer;
+        private System.Windows.Forms.CheckBox cbPlayer1Ready;
+        private System.Windows.Forms.CheckBox cbPlayer2Ready;
     }
 }

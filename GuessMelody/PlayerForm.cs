@@ -193,6 +193,23 @@ namespace GuessMelody
             }
         }
 
+        /// <summary>
+        /// Обработчик кнопки-чекбокса "Игрок Готов"
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void cbReady_CheckedChanged(object sender, EventArgs e)
+        {
+            cbReady.BackColor = cbReady.Checked ? Color.GreenYellow : SystemColors.Control;
+            if (IsFirstPlayer)
+            {
+                GameState.Instance.IsPlayer1Ready = cbReady.Checked;
+            }
+            else
+            {
+                GameState.Instance.IsPlayer2Ready = cbReady.Checked;
+            }
+        }
 
     }
 }

@@ -41,6 +41,7 @@ namespace GuessMelody
             this.lbPlayer2 = new System.Windows.Forms.Label();
             this.lbPlayer1 = new System.Windows.Forms.Label();
             this.gameDurationTimer = new System.Windows.Forms.Timer(this.components);
+            this.ttHint = new System.Windows.Forms.ToolTip(this.components);
             this.SuspendLayout();
             // 
             // pbSongDuration
@@ -149,6 +150,10 @@ namespace GuessMelody
             this.gameDurationTimer.Interval = 1000;
             this.gameDurationTimer.Tick += new System.EventHandler(this.gameDurationTimer_Tick);
             // 
+            // ttHint
+            // 
+            this.ttHint.IsBalloon = true;
+            // 
             // GameFormBase
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -184,6 +189,7 @@ namespace GuessMelody
         protected System.Windows.Forms.Label lbPlayer1Score;
         protected System.Windows.Forms.Label lbPlayer2;
         protected System.Windows.Forms.Label lbPlayer1;
-        protected System.Windows.Forms.Timer gameDurationTimer;
+        protected internal System.Windows.Forms.ToolTip ttHint;
+        protected internal System.Windows.Forms.Timer gameDurationTimer;
     }
 }

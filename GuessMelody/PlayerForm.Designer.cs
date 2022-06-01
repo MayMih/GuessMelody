@@ -41,6 +41,7 @@ namespace GuessMelody
             this.btChangeColor = new System.Windows.Forms.Button();
             this.lbSongInfoCaption = new System.Windows.Forms.Label();
             this.txtSongInfo = new System.Windows.Forms.TextBox();
+            this.cbReady = new System.Windows.Forms.CheckBox();
             this.gbPlayerControls.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -75,7 +76,7 @@ namespace GuessMelody
             // 
             // btRenamePlayer
             // 
-            this.btRenamePlayer.Location = new System.Drawing.Point(28, 249);
+            this.btRenamePlayer.Location = new System.Drawing.Point(28, 224);
             this.btRenamePlayer.Name = "btRenamePlayer";
             this.btRenamePlayer.Size = new System.Drawing.Size(137, 38);
             this.btRenamePlayer.TabIndex = 35;
@@ -168,7 +169,7 @@ namespace GuessMelody
             // 
             // btChangeColor
             // 
-            this.btChangeColor.Location = new System.Drawing.Point(28, 184);
+            this.btChangeColor.Location = new System.Drawing.Point(28, 167);
             this.btChangeColor.Name = "btChangeColor";
             this.btChangeColor.Size = new System.Drawing.Size(113, 38);
             this.btChangeColor.TabIndex = 36;
@@ -197,11 +198,28 @@ namespace GuessMelody
             this.txtSongInfo.TabIndex = 38;
             this.txtSongInfo.TabStop = false;
             // 
+            // cbReady
+            // 
+            this.cbReady.Appearance = System.Windows.Forms.Appearance.Button;
+            this.cbReady.BackColor = System.Drawing.SystemColors.Control;
+            this.cbReady.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.cbReady.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.cbReady.Location = new System.Drawing.Point(28, 278);
+            this.cbReady.Name = "cbReady";
+            this.cbReady.Size = new System.Drawing.Size(113, 30);
+            this.cbReady.TabIndex = 7;
+            this.cbReady.Text = "Готов";
+            this.cbReady.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.ttHint.SetToolTip(this.cbReady, "Нажмите сюда, чтобы показать Ведущему, что вы отошли/настраиваетесь и наоборот");
+            this.cbReady.UseVisualStyleBackColor = false;
+            this.cbReady.CheckedChanged += new System.EventHandler(this.cbReady_CheckedChanged);
+            // 
             // PlayerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(532, 450);
+            this.Controls.Add(this.cbReady);
             this.Controls.Add(this.txtSongInfo);
             this.Controls.Add(this.lbSongInfoCaption);
             this.Controls.Add(this.btChangeColor);
@@ -227,6 +245,7 @@ namespace GuessMelody
             this.Controls.SetChildIndex(this.btChangeColor, 0);
             this.Controls.SetChildIndex(this.lbSongInfoCaption, 0);
             this.Controls.SetChildIndex(this.txtSongInfo, 0);
+            this.Controls.SetChildIndex(this.cbReady, 0);
             this.gbPlayerControls.ResumeLayout(false);
             this.gbPlayerControls.PerformLayout();
             this.ResumeLayout(false);
@@ -248,5 +267,6 @@ namespace GuessMelody
         private System.Windows.Forms.Button btChangeColor;
         private System.Windows.Forms.Label lbSongInfoCaption;
         private System.Windows.Forms.TextBox txtSongInfo;
+        private System.Windows.Forms.CheckBox cbReady;
     }
 }
