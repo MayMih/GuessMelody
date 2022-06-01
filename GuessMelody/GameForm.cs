@@ -464,6 +464,31 @@ namespace GuessMelody
             }
         }
 
+        private void lbPlayer1Score_DoubleClick(object sender, EventArgs e)
+        {
+            GameState.Instance.Player1Score++;
+        }
+
+        private void lbPlayer2Score_DoubleClick(object sender, EventArgs e)
+        {
+            GameState.Instance.Player2Score++;
+        }
+
+        private void lbPlayer2Score_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Middle)
+            {
+                GameState.Instance.Player2Score--;
+            }
+        }
+
+        private void lbPlayer1Score_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Middle)
+            {
+                GameState.Instance.Player1Score--;
+            }
+        }
 
         #endregion 'Обработчики'
 
@@ -497,7 +522,7 @@ namespace GuessMelody
             }
         }
 
-        /// <summary>
+        /// <summary> 
         /// При изменении текущей композиции
         /// </summary>
         /// <param name="sender"></param>
@@ -528,8 +553,10 @@ namespace GuessMelody
             }
         }
 
+
+
         #endregion 'Обработчики Плеера'
 
-
+       
     }
 }

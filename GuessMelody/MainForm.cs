@@ -190,11 +190,11 @@ namespace GuessMelody
             }
             else if ((e.CloseReason == CloseReason.None || e.CloseReason == CloseReason.UserClosing) &&
                 !GameState.Instance.IsGameEnded && frmGame.Visible)
-            {
-                e.Cancel = true;
+            {                
                 frmGame.Show();                
                 frmGame.BringToFront();
                 frmGame.Close();
+                e.Cancel = frmGame.Visible;
             }
             this.UseWaitCursor = true;
             this.Controls.OfType<Control>().ToList().ForEach(ctr => ctr.Enabled = false);

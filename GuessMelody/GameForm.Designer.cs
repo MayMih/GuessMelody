@@ -87,7 +87,18 @@ namespace GuessMelody
             // lbPlayer2Score
             // 
             this.lbPlayer2Score.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lbPlayer2Score.Cursor = System.Windows.Forms.Cursors.Hand;
             this.lbPlayer2Score.Location = new System.Drawing.Point(533, 68);
+            this.ttHint.SetToolTip(this.lbPlayer2Score, "Двой клик ЛКМ (+1 балл); Клик СКМ (-1 балл)");
+            this.lbPlayer2Score.DoubleClick += new System.EventHandler(this.lbPlayer2Score_DoubleClick);
+            this.lbPlayer2Score.MouseClick += new System.Windows.Forms.MouseEventHandler(this.lbPlayer2Score_MouseClick);
+            // 
+            // lbPlayer1Score
+            // 
+            this.lbPlayer1Score.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.ttHint.SetToolTip(this.lbPlayer1Score, "Двой клик ЛКМ (+1 балл); Клик СКМ (-1 балл)");
+            this.lbPlayer1Score.DoubleClick += new System.EventHandler(this.lbPlayer1Score_DoubleClick);
+            this.lbPlayer1Score.MouseClick += new System.Windows.Forms.MouseEventHandler(this.lbPlayer1Score_MouseClick);
             // 
             // lbPlayer2
             // 
