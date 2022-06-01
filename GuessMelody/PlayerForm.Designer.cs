@@ -168,7 +168,7 @@ namespace GuessMelody
             // 
             // btChangeColor
             // 
-            this.btChangeColor.Location = new System.Drawing.Point(28, 174);
+            this.btChangeColor.Location = new System.Drawing.Point(28, 184);
             this.btChangeColor.Name = "btChangeColor";
             this.btChangeColor.Size = new System.Drawing.Size(113, 38);
             this.btChangeColor.TabIndex = 36;

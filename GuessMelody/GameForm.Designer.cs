@@ -141,7 +141,7 @@ namespace GuessMelody
             this.btPlayPause.Name = "btPlayPause";
             this.btPlayPause.Size = new System.Drawing.Size(178, 45);
             this.btPlayPause.TabIndex = 10;
-            this.btPlayPause.Text = "Пауза";
+            this.btPlayPause.Text = "Продолжить";
             this.btPlayPause.UseVisualStyleBackColor = true;
             this.btPlayPause.Click += new System.EventHandler(this.btPlayPause_Click);
             // 

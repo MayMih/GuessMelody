@@ -60,7 +60,8 @@ namespace GuessMelody
                 (Keys.Enter, "\"Ввод\""), (Keys.RShiftKey, "\"Правый Shift" ),
                 (Keys.Alt, "\"Alt" ), (Keys.LShiftKey, "\"Левый Shift\""), (Keys.LControlKey, "\"Левый Control\""),
                 (Keys.RControlKey, "\"Правый Control\""), (Keys.Add, "\"+\""), (Keys.Subtract, "\"-\""), (Keys.Divide, "\"/\""),
-                (Keys.Decimal, "\"Точка\""), (Keys.Right, "\"→\""), (Keys.Left, "\"←\""), (Keys.Up, "\"↑\""), (Keys.Down, "\"↓\""),
+                (Keys.Decimal, "\"Точка\""), (Keys.Right, "\"→\""), (Keys.Left, "\"←\""),
+                //(Keys.Up, "\"↑\""), (Keys.Down, "\"↓\""),     // стралки ВВЕРХ \ ВНИЗ использовать нельзя - конфликт с ползунком громкости
                 (Keys.PageUp, "\"PageUp\""), (Keys.PageDown, "\"PageDown\""), (Keys.Home, "\"Home\""), (Keys.End, "\"End\""),
                 (Keys.Back, "\"Backspace\""), (Keys.Tab, "\"Tab\""), (Keys.Escape, "\"Esc\""), (Keys.Delete, "\"Del\""),
                 (Keys.Insert, "\"Insert\""), (Keys.Multiply, "\"Умножить (*)\""), (Keys.Space, "\"Пробел\""),
@@ -153,17 +154,45 @@ namespace GuessMelody
                 ctr.Enabled = cbAllowEditing.Checked);
         }
 
+        /// <summary>
+        /// Обработчик смены управляющей клавиши пользователем - проверяет, не задана ли она уже у другого игрока
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void cmbAnswerKey_SelectionChangeCommitted(object sender, EventArgs e)
         {
             var selectedKey = ((ValueTuple<Keys, string>)cmbAnswerKey.SelectedItem).Item1;
+            bool isError = false;
             if (IsFirstPlayer)
             {
-                GameState.Instance.Player1Key = selectedKey;
+                if (GameState.Instance.Player2Key == selectedKey)
+                {
+                    isError = true;
+                }
+                else
+                {
+                    GameState.Instance.Player1Key = selectedKey;
+                }
             }
             else
             {
-                GameState.Instance.Player2Key = selectedKey;
+                if (GameState.Instance.Player1Key == selectedKey)
+                {
+                    isError = true;
+                }
+                else
+                {
+                    GameState.Instance.Player2Key = selectedKey;
+                }
+            }
+
+            if (isError)
+            {
+                MessageBox.Show(this, $@"Кнопка ""{selectedKey}"" уже выбрана другим игроком - укажите другую клавишу!",
+                    "Отказ в назначении кнопки ответа!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
+
+
     }
 }

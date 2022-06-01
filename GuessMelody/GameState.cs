@@ -118,11 +118,16 @@ namespace GuessMelody
         /// <summary>
         /// Кнопка активации ответа Игрока 1
         /// </summary>
-        public Keys Player1Key { get; internal set; }
+        public Keys Player1Key { 
+            get; 
+            internal set; 
+        }
         /// <summary>
         /// Кнопка активации ответа Игрока 2
         /// </summary>
         public Keys Player2Key { get; internal set; }
+
+        public bool IsPlayersReady => Player1Key != Player2Key;
 
         #endregion 'Свойства'
 

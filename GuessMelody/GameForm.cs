@@ -155,6 +155,7 @@ namespace GuessMelody
         public GameForm(string title = DEFAULT_FORM_TITLE)
         {
             InitializeComponent();
+            ttHint.IsBalloon = true;
             this.Text = title;
             this.KeyPreview = true;
             // определяет, будет ли воспроизведение начинаться сразу после смены пути к текущему файлу
@@ -191,8 +192,8 @@ namespace GuessMelody
             lbVolumeLevel.Text = tbVolume.Value.ToString();
             _curSongShortInfo = String.Empty;
             _isSongGuessed = false;
-            _currentSongNumber = 0;
-            btPlayNext_Click(this, EventArgs.Empty);
+            _currentSongNumber = 0;            
+            btPlayNext_Click(this, EventArgs.Empty);            
         }
 
         /// <summary>
@@ -205,7 +206,8 @@ namespace GuessMelody
             gameDurationTimer.Stop();
             var result = GameState.Instance.Result;
             MessageBox.Show(this, ("Победил" + (result == GameState.GameResult.Player1Win ? (" " + lbPlayer1.Text) :
-                (result == GameState.GameResult.Player2Win ? (" " + lbPlayer2.Text) : "а дружба!"))), "Результаты");
+                (result == GameState.GameResult.Player2Win ? (" " + lbPlayer2.Text) : "а дружба!"))), "Результаты", 
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         /// <summary>
@@ -259,6 +261,11 @@ namespace GuessMelody
         /// <param name="e"></param>
         private void btPlayNext_Click(object sender, System.EventArgs e)
         {
+            if (!GameState.Instance.IsPlayersReady)
+            {
+                ttHint.Show("Игроки ещё не готовы", btPlayPause);
+                return;
+            }
             _isSongGuessed = false;
             pbSongDuration.Value = 0;            
             ttHint.Hide(btPlayNext);            
@@ -322,13 +329,26 @@ namespace GuessMelody
         /// <param name="e"></param>
         private void btPlayPause_Click(object sender, EventArgs e)
         {
+            if (!GameState.Instance.IsPlayersReady)
+            {
+                ttHint.Show("Игроки ещё не готовы", btPlayPause);
+                return;
+            }
+            else
+            {
+                ttHint.SetToolTip(btPlayPause, "");
+            }
             if (wmpHiddenPlayer.playState == WMPLib.WMPPlayState.wmppsPlaying)
             {
                 wmpHiddenPlayer.Ctlcontrols.pause();
             }
-            else
+            else if (wmpHiddenPlayer.currentMedia != null)
             {
                 wmpHiddenPlayer.Ctlcontrols.play();
+            }
+            else
+            {
+                btPlayNext_Click(btPlayPause, EventArgs.Empty);
             }
         }
 
